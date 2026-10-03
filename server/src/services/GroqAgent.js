@@ -1,14 +1,21 @@
 const Groq = require('groq-sdk');
 
-const groq = new Groq({
-  apiKey: process.env.GROQ_API_KEY,
-});
+let groqClient = null;
+const getGroqClient = () => {
+  if (!groqClient) {
+    groqClient = new Groq({
+      apiKey: process.env.GROQ_API_KEY || "dummy_key",
+    });
+  }
+  return groqClient;
+};
 
 class GroqAgent {
   static async generate(prompt, systemInstruction = "You are a helpful AI assistant.", retries = 3, delay = 3000) {
     for (let i = 0; i < retries; i++) {
       try {
-        const response = await groq.chat.completions.create({
+        const client = getGroqClient();
+        const response = await client.chat.completions.create({
           model: "llama-3.3-70b-versatile",
           messages: [
             { role: "system", content: systemInstruction },
