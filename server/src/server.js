@@ -51,20 +51,30 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/uploads", express.static(path.join(__dirname, "..", "uploads")));
 
+// Ensure DB connected on incoming requests
+app.use(async (req, res, next) => {
+  await connectDB();
+  next();
+});
+
 app.get("/", (req, res) => {
   res.send("PrepAI API Running");
+});
+
+app.get("/api/health", (req, res) => {
+  res.json({ status: "ok", timestamp: new Date().toISOString() });
 });
 
 app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/projects", require("./routes/projectRoutes"));
 app.use("/api/resume", require("./routes/resumeRoutes"));
 
-const startServer = async () => {
-  await connectDB();
-
-  app.listen(PORT, () => {
-    console.log(`🚀 Server running on ${PORT}`);
+if (process.env.NODE_ENV !== "production" || !process.env.VERCEL) {
+  connectDB().then(() => {
+    app.listen(PORT, () => {
+      console.log(`🚀 Server running on ${PORT}`);
+    });
   });
-};
+}
 
-startServer();
+module.exports = app;

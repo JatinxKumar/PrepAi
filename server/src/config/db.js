@@ -35,18 +35,26 @@
 
 const mongoose = require("mongoose");
 
+let isConnected = false;
+
 const connectDB = async () => {
+  if (isConnected || mongoose.connection.readyState === 1) {
+    return;
+  }
+
+  if (!process.env.MONGO_URI) {
+    console.warn("MONGO_URI not defined in environment variables.");
+    return;
+  }
+
   try {
-    console.log("Connecting to:");
-    console.log(process.env.MONGO_URI);
-
-    const conn = await mongoose.connect(process.env.MONGO_URI);
-
-    console.log("Mongo Connected");
-    console.log(conn.connection.host);
+    const conn = await mongoose.connect(process.env.MONGO_URI, {
+      serverSelectionTimeoutMS: 5000,
+    });
+    isConnected = true;
+    console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
   } catch (err) {
-    console.log("FULL ERROR");
-    console.log(err);
+    console.error("❌ MongoDB Connection Error:", err.message);
   }
 };
 
