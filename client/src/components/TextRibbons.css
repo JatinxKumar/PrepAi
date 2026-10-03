@@ -1,0 +1,104 @@
+/* ═══════════════════════════════════════════
+   TextRibbons – Curved floating text
+   Inspired by Flow.ai landing page
+   ═══════════════════════════════════════════ */
+
+.text-ribbons-container {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.ribbon-svg {
+  position: absolute;
+  width: 140%;
+  height: 100%;
+  left: -20%;
+  top: 0;
+}
+
+.ribbon-top-left {
+  top: -10%;
+  transform: rotate(-8deg);
+  opacity: 0.12;
+}
+
+.ribbon-bottom-right {
+  top: 15%;
+  transform: rotate(5deg);
+  opacity: 0.10;
+}
+
+.ribbon-mid {
+  top: 5%;
+  transform: rotate(-3deg);
+  opacity: 0.07;
+}
+
+.ribbon-text {
+  font-family: 'Outfit', system-ui, sans-serif;
+  font-size: 18px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  fill: currentColor;
+}
+
+.ribbon-top-left .ribbon-text {
+  color: #22d3ee;
+  fill: #22d3ee;
+}
+
+.ribbon-bottom-right .ribbon-text {
+  color: #8b5cf6;
+  fill: #8b5cf6;
+}
+
+.ribbon-mid .ribbon-text {
+  color: #6ee7ff;
+  fill: #6ee7ff;
+}
+
+/* ── Scroll animation for textPath ── */
+@keyframes ribbonScroll {
+  0% {
+    offset-distance: 0%;
+  }
+  100% {
+    offset-distance: 100%;
+  }
+}
+
+/* Since SVG textPath startOffset can't animate via CSS directly,
+   we use a different approach: translate the entire SVG slowly */
+
+.ribbon-top-left {
+  animation: ribbonDriftRight 60s linear infinite;
+}
+
+.ribbon-bottom-right {
+  animation: ribbonDriftLeft 55s linear infinite;
+}
+
+.ribbon-mid {
+  animation: ribbonDriftRight 70s linear infinite;
+}
+
+@keyframes ribbonDriftRight {
+  0% {
+    transform: translateX(-30%) rotate(-8deg);
+  }
+  100% {
+    transform: translateX(10%) rotate(-8deg);
+  }
+}
+
+@keyframes ribbonDriftLeft {
+  0% {
+    transform: translateX(10%) rotate(5deg);
+  }
+  100% {
+    transform: translateX(-30%) rotate(5deg);
+  }
+}
