@@ -6,7 +6,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { signInWithGoogle } from "../config/firebase";
 import useAuthStore from "../store/authStore";
 
-const API_URL = "http://localhost:5000/api";
+const API_URL = import.meta.env.VITE_API_URL || "/api";
 
 export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);

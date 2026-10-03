@@ -38,7 +38,7 @@ import PremiumResumeSection from "../components/PremiumResumeSection";
 import SideRays from "../components/SideRays";
 import useAuthStore from "../store/authStore";
 
-const API_URL = "http://localhost:5000/api";
+const API_URL = import.meta.env.VITE_API_URL || "/api";
 
 
 const HISTORY_KEY = "project-dna-history";
