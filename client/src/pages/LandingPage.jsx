@@ -164,122 +164,85 @@ export default function LandingPage() {
       </nav>
 
       <main>
+        {/* Hero Section */}
         <section
-          className="relative min-h-screen flex flex-col items-center justify-center px-6 pt-28 pb-20 overflow-hidden"
+          className="relative min-h-[92vh] flex items-center justify-between px-6 sm:px-12 lg:px-16 pt-24 pb-12 overflow-hidden bg-[#050816]"
           ref={heroRef}
         >
-          {/* DotField — deepest background layer */}
-          <div className="absolute inset-0 z-0">
-            <DotField
-              dotRadius={2}
-              dotSpacing={14}
-              bulgeStrength={80}
-              glowRadius={180}
-              sparkle={false}
-              waveAmplitude={0}
-              gradientFrom="rgba(139, 92, 246, 0.75)"
-              gradientTo="rgba(34, 211, 238, 0.65)"
-              glowColor="#0a0a12"
-            />
-          </div>
+          {/* Subtle Ambient Background Gradients */}
+          <div className="absolute top-1/4 left-10 w-96 h-96 bg-purple-600/15 rounded-full blur-[120px] pointer-events-none" />
+          <div className="absolute bottom-10 right-1/4 w-[500px] h-[500px] bg-cyan-500/15 rounded-full blur-[140px] pointer-events-none" />
 
-          {/* SideRays — on top of dots */}
-          <SideRays
-            speed={2.0}
-            rayColor1="#a855f7"
-            rayColor2="#22d3ee"
-            intensity={1.5}
-            spread={1.8}
-            origin="top-right"
-            tilt={-10}
-            saturation={1.5}
-            blend={0.6}
-            falloff={1.5}
-            opacity={0.8}
-          />
+          <div className="relative z-10 w-full max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-10">
+            {/* Left Side: Content */}
+            <div className="w-full lg:max-w-[580px] text-left flex flex-col items-start z-10">
+              {/* Badge */}
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-purple-500/30 bg-purple-500/10 backdrop-blur-md mb-6">
+                <Sparkles className="w-4 h-4 text-cyan-300 animate-pulse" />
+                <span className="text-xs uppercase tracking-widest font-semibold bg-gradient-to-r from-cyan-300 to-purple-300 bg-clip-text text-transparent">
+                  AI Placement Copilot
+                </span>
+              </div>
 
-          <div className="relative z-10 text-center max-w-3xl mx-auto">
-            {/* Line 1 — GradientText: animated sweeping gradient */}
-            <motion.div
-              initial={{ opacity: 0, y: -30, filter: "blur(10px)" }}
-              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-              transition={{
-                duration: 0.8,
-                delay: 0.1,
-                ease: [0.22, 1, 0.36, 1],
-              }}
-            >
-              <GradientText
-                colors={[
-                  "#22d3ee",
-                  "#60a5fa",
-                  "#a78bfa",
-                  "#f472b6",
-                  "#34d399",
-                  "#22d3ee",
-                ]}
-                animationSpeed={18}
-                direction="horizontal"
-                yoyo={true}
-                className="hero-gradient-text text-6xl sm:text-7xl xl:text-[6rem] font-bold leading-[1.05] tracking-[-0.04em]"
-              >
-                Prepare Smarter
-              </GradientText>
-            </motion.div>
+              {/* Main Heading */}
+              <h1 className="font-heading text-4xl sm:text-5xl xl:text-6xl font-extrabold tracking-tight leading-[1.12] text-white">
+                Turn Your Code Into{" "}
+                <span className="bg-gradient-to-r from-cyan-300 via-purple-400 to-fuchsia-400 bg-clip-text text-transparent">
+                  Placement Power
+                </span>
+              </h1>
 
-            {/* Line 2 — BlurText: gradient */}
-            <BlurText
-              text="Get Hired Faster."
-              delay={90}
-              animateBy="words"
-              direction="top"
-              stepDuration={0.55}
-              className="text-6xl sm:text-7xl xl:text-[6rem] font-bold leading-[1.05] tracking-[-0.04em] bg-gradient-to-r from-cyan-300 via-violet-400 to-purple-300 bg-clip-text text-transparent justify-center"
-            />
+              {/* Subtitle */}
+              <p className="mt-6 text-base sm:text-lg text-slate-300 leading-relaxed max-w-xl">
+                Connect your GitHub repo. PrepAI analyzes your code, architecture, and tech stack to generate placement-ready stories, viva prep, ATS resume bullets, and mock interviews.
+              </p>
 
-            {/* Subtitle — VariableProximity */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{
-                delay: 1.0,
-                duration: 0.7,
-                ease: [0.22, 1, 0.36, 1],
-              }}
-              className="mt-8 max-w-xl mx-auto"
-            >
-              <VariableProximity
-                label="Connect your GitHub repo. PrepAI reads your code and builds your placement kit — stories, viva prep, resume bullets, mock interview."
-                fromFontVariationSettings="'wght' 300, 'opsz' 9"
-                toFontVariationSettings="'wght' 700, 'opsz' 40"
-                containerRef={heroRef}
-                radius={120}
-                falloff="gaussian"
-                className="text-base text-slate-400 leading-relaxed"
-              />
-            </motion.div>
+              {/* Action CTA Buttons */}
+              <div className="mt-8 flex flex-wrap items-center gap-4">
+                <Link
+                  to={token ? "/dashboard" : "/auth"}
+                  className="group inline-flex items-center gap-3 px-8 py-4 rounded-xl text-base font-bold text-white bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-500 shadow-[0_0_40px_rgba(168,85,247,0.4)] hover:shadow-[0_0_60px_rgba(168,85,247,0.7)] hover:scale-105 transition-all duration-300"
+                >
+                  Start for Free
+                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1.5 transition-transform" />
+                </Link>
 
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{
-                delay: 1.2,
-                duration: 0.7,
-                ease: [0.22, 1, 0.36, 1],
-              }}
-              className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4"
-            >
-              <MagneticButton
-                to={token ? "/dashboard" : "/auth"}
-                label="Start for Free"
-              />
-              <a
-                href="#how-it-works"
-                className="px-6 py-3.5 rounded-full border border-white/10 bg-white/5 hover:bg-white/10 transition-all text-sm font-medium text-slate-300"
-              >
-                See how it works
-              </a>
-            </motion.div>
+                <a
+                  href="#how-it-works"
+                  className="px-6 py-4 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 hover:border-white/20 transition-all text-sm font-semibold text-slate-300 hover:text-white backdrop-blur-md"
+                >
+                  See how it works
+                </a>
+              </div>
+
+              {/* Mini Features Checklist */}
+              <div className="mt-10 grid grid-cols-2 gap-4 text-xs sm:text-sm text-slate-400 font-medium">
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-cyan-400" />
+                  <span>GitHub Repository Ingestion</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-purple-400" />
+                  <span>7 Specialized AI Agents</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                  <span>Real-time Viva Simulator</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-pink-400" />
+                  <span>ATS Resume Optimizer</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Right Side: Interactive 3D Spline Model */}
+            <div className="w-full lg:flex-1 h-[480px] sm:h-[550px] lg:h-[620px] relative flex items-center justify-center">
+              <spline-viewer
+                url="https://prod.spline.design/I2tSq-VJu2V8nZQO/scene.splinecode"
+                style={{ width: "100%", height: "100%", display: "block" }}
+              ></spline-viewer>
+            </div>
           </div>
         </section>
 
