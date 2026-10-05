@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Poppins:wght@600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Edu+SA+Beginner:wght@400..700&family=Space+Grotesk:wght@300..700&display=swap');
 @import "tailwindcss";
 
 @theme {
@@ -7,8 +7,8 @@
   --color-dark-bg: #0f1026;
   --color-dark-glass: rgba(255, 255, 255, 0.09);
   --color-neon-border: rgba(170, 59, 255, 0.5);
-  --font-sans: 'Inter', system-ui, sans-serif;
-  --font-heading: 'Poppins', 'Inter', system-ui, sans-serif;
+  --font-sans: 'Space Grotesk', system-ui, sans-serif;
+  --font-heading: 'Space Grotesk', system-ui, sans-serif;
 }
 
 /* Base */
@@ -24,7 +24,7 @@ html {
 
 body {
   margin: 0;
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: 'Space Grotesk', system-ui, sans-serif;
   background-color: #11122d;
   color: #f3f4f6;
   overflow-x: hidden;
@@ -38,8 +38,7 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: 'Outfit', system-ui, sans-serif;
-  font-family: 'Poppins', 'Inter', system-ui, sans-serif;
+  font-family: 'Space Grotesk', system-ui, sans-serif;
   color: #ffffff;
   font-weight: 700;
   margin: 0;
@@ -204,7 +203,7 @@ p {
 }
 
 .font-heading {
-  font-family: 'Poppins', 'Inter', system-ui, sans-serif;
+  font-family: 'Space Grotesk', system-ui, sans-serif;
 }
 
 .premium-page-bg {
@@ -331,6 +330,37 @@ p {
       transparent 40%,
       rgba(5, 8, 22, 0.4) 80%,
       rgba(5, 8, 22, 0.7) 100%);
+}
+
+/* Continuous Marquee Animation */
+@keyframes marquee {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee 25s linear infinite;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+/* Footer link glow hover */
+.footer-link-glow {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.footer-link-glow:hover {
+  color: #ffffff;
+  filter: drop-shadow(0 0 10px rgba(168, 85, 247, 0.85)) drop-shadow(0 0 20px rgba(192, 132, 252, 0.5));
+  transform: translateY(-2px);
 }
 
 

@@ -66,6 +66,8 @@ router.post(
   resumeController.uploadResume,
 );
 router.post("/:id/improve", authMiddleware, resumeController.improveResume);
+router.post("/:id/analyze-job", authMiddleware, resumeController.analyzeJob);
+router.post("/:id/match-job", authMiddleware, resumeController.matchJob);
 router.get("/:id/download", authMiddleware, resumeController.downloadResume);
 router.delete("/:id", authMiddleware, resumeController.deleteResume);
 router.post("/optimize-bullet", authMiddleware, resumeController.optimizeBullet);
