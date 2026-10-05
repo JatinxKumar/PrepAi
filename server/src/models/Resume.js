@@ -30,6 +30,24 @@ const resumeSchema = new mongoose.Schema(
 		optimized: { type: optimizedResumeSchema, default: () => ({}) },
 		atsScore: { type: mongoose.Schema.Types.Mixed, default: null },
 		suggestions: { type: [String], default: [] },
+		structuredResume: { type: mongoose.Schema.Types.Mixed, default: null },
+		structuringStatus: {
+			type: String,
+			enum: ["pending", "processing", "structured", "structure_failed"],
+			default: "pending",
+		},
+		jobAnalysis: { type: mongoose.Schema.Types.Mixed, default: null },
+		jobAnalysisStatus: {
+			type: String,
+			enum: ["none", "processing", "analyzed", "failed"],
+			default: "none",
+		},
+		matchAnalysis: { type: mongoose.Schema.Types.Mixed, default: null },
+		matchAnalysisStatus: {
+			type: String,
+			enum: ["none", "processing", "analyzed", "failed"],
+			default: "none",
+		},
 	},
 	{
 		timestamps: true,

@@ -7,6 +7,10 @@ const {
   ensureResumeDirectory,
 } = require("../services/ResumeDocumentService");
 const { scoreResume } = require("../services/ResumeATS");
+const { structureResumeText } = require("../services/ResumeStructuringService");
+const { structureJobDescription } = require("../services/JobDescriptionService");
+const { matchResumeToJob } = require("../services/ResumeMatchService");
+const { buildMatchPresentation } = require("../services/MatchAnalysisPresentationService");
 
 const isMongoId = (value) => /^[a-f\d]{24}$/i.test(String(value || ""));
 
@@ -77,7 +81,27 @@ exports.uploadResume = async (req, res) => {
       },
       atsScore,
       suggestions: atsScore.suggestions,
+      structuringStatus: "processing",
     });
+
+    if (isMongoId(req.user.id)) {
+      await resume.save();
+    }
+
+    // Structure extracted resume text using LLM service
+    try {
+      const structuringResult = await structureResumeText(extractedText);
+      if (structuringResult.success) {
+        resume.structuredResume = structuringResult.data;
+        resume.structuringStatus = "structured";
+      } else {
+        resume.structuringStatus = "structure_failed";
+        console.warn("Resume structuring warning:", structuringResult.error);
+      }
+    } catch (structError) {
+      resume.structuringStatus = "structure_failed";
+      console.error("Resume structuring exception:", structError.message);
+    }
 
     if (isMongoId(req.user.id)) {
       await resume.save();
@@ -290,3 +314,162 @@ exports.optimizeBullet = async (req, res) => {
   }
 };
 
+exports.analyzeJob = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { jobDescription } = req.body;
+
+    if (!isMongoId(id)) {
+      return res.status(400).json({ error: "Invalid resume id" });
+    }
+
+    if (!jobDescription || typeof jobDescription !== "string" || !jobDescription.trim()) {
+      return res.status(400).json({ error: "Job description is required" });
+    }
+
+    if (jobDescription.length > 50000) {
+      return res.status(400).json({ error: "Job description exceeds maximum length of 50,000 characters." });
+    }
+
+    const resume = await Resume.findOne({ _id: id, user: req.user.id });
+    if (!resume) {
+      return res.status(404).json({ error: "Resume not found or access denied" });
+    }
+
+    resume.jobAnalysisStatus = "processing";
+    if (isMongoId(req.user.id)) {
+      await resume.save();
+    }
+
+    const result = await structureJobDescription(jobDescription);
+
+    if (result.success) {
+      resume.jobAnalysis = result.data;
+      resume.jobAnalysisStatus = "analyzed";
+      if (result.data.jobTitle && result.data.jobTitle !== "Target Role") {
+        resume.targetRole = result.data.jobTitle;
+      }
+    } else {
+      resume.jobAnalysisStatus = "failed";
+      console.warn("Job description structuring warning:", result.error);
+    }
+
+    if (isMongoId(req.user.id)) {
+      await resume.save();
+    }
+
+    if (!result.success) {
+      return res.status(422).json({
+        error: result.error || "Failed to structure job description",
+        resume,
+      });
+    }
+
+    return res.status(200).json({
+      message: "Job description analyzed successfully",
+      jobAnalysis: result.data,
+      resume,
+    });
+  } catch (error) {
+    console.error("Analyze job error:", error);
+    return res.status(500).json({ error: error.message || "Failed to analyze job description" });
+  }
+};
+
+exports.matchJob = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { jobDescription } = req.body;
+
+    if (!isMongoId(id)) {
+      return res.status(400).json({ error: "Invalid resume id" });
+    }
+
+    if (!jobDescription || typeof jobDescription !== "string" || !jobDescription.trim()) {
+      return res.status(400).json({ error: "Job description is required" });
+    }
+
+    if (jobDescription.length > 50000) {
+      return res.status(400).json({ error: "Job description exceeds maximum length of 50,000 characters." });
+    }
+
+    const resume = await Resume.findOne({ _id: id, user: req.user.id });
+    if (!resume) {
+      return res.status(404).json({ error: "Resume not found or access denied" });
+    }
+
+    if (!resume.structuredResume || typeof resume.structuredResume !== "object") {
+      return res.status(422).json({
+        error: "Resume has not been successfully parsed or structured yet. Please upload and process the resume first.",
+        structuringStatus: resume.structuringStatus || "pending",
+      });
+    }
+
+    resume.matchAnalysisStatus = "processing";
+    if (isMongoId(req.user.id)) {
+      await resume.save();
+    }
+
+    // Ensure Job Description is structured
+    let jobAnalysis = resume.jobAnalysis;
+    if (!jobAnalysis || typeof jobAnalysis !== "object" || !Array.isArray(jobAnalysis.requiredSkills)) {
+      const jdResult = await structureJobDescription(jobDescription);
+      if (!jdResult.success) {
+        resume.matchAnalysisStatus = "failed";
+        if (isMongoId(req.user.id)) {
+          await resume.save();
+        }
+        return res.status(422).json({
+          error: jdResult.error || "Failed to structure job description for matching",
+        });
+      }
+      jobAnalysis = jdResult.data;
+      resume.jobAnalysis = jobAnalysis;
+      resume.jobAnalysisStatus = "analyzed";
+      if (jobAnalysis.jobTitle && jobAnalysis.jobTitle !== "Target Role") {
+        resume.targetRole = jobAnalysis.jobTitle;
+      }
+    }
+
+    // Execute Explainable Semantic Match Engine
+    const matchResult = await matchResumeToJob(jobAnalysis, resume.structuredResume);
+
+    resume.matchAnalysis = matchResult;
+    resume.matchAnalysisStatus = "analyzed";
+
+    if (isMongoId(req.user.id)) {
+      await resume.save();
+    }
+
+    // Build presentation layer on top of raw match data
+    const presentation = buildMatchPresentation(
+      matchResult,
+      resume.jobAnalysis,
+      resume.structuredResume
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: "Job match analysis completed successfully",
+      matchAnalysis: matchResult,
+      presentation,
+      resume,
+    });
+  } catch (error) {
+    console.error("[resumeController.matchJob] Error executing match analysis:", error.message);
+    try {
+      if (req.params?.id && isMongoId(req.params.id) && isMongoId(req.user?.id)) {
+        await Resume.updateOne(
+          { _id: req.params.id, user: req.user.id },
+          { $set: { matchAnalysisStatus: "failed" } }
+        );
+      }
+    } catch (saveErr) {
+      console.warn("Failed to mark matchAnalysisStatus as failed:", saveErr.message);
+    }
+
+    return res.status(500).json({
+      error: "Failed to execute job match analysis. Please try again.",
+    });
+  }
+};

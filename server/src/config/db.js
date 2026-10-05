@@ -34,6 +34,14 @@
 // module.exports = connectDB;
 
 const mongoose = require("mongoose");
+const dns = require("dns");
+
+// Fix for Windows / ISP DNS blocking SRV queries (querySrv ECONNREFUSED)
+try {
+  dns.setServers(["8.8.8.8", "1.1.1.1"]);
+} catch (err) {
+  // Fallback if environment doesn't permit custom DNS
+}
 
 let isConnected = false;
 

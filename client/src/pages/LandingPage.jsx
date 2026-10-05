@@ -1,6 +1,4 @@
 import { motion } from "framer-motion";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import {
   ArrowRight,
   BrainCircuit,
@@ -19,17 +17,41 @@ import DotField from "../components/DotField";
 import GradientText from "../components/GradientText";
 import SideRays from "../components/SideRays";
 import VariableProximity from "../components/VariableProximity";
+import CurtainFooter from "../components/CurtainFooter";
 import useAuthStore from "../store/authStore";
 
-gsap.registerPlugin(ScrollTrigger);
+const staggerContainer = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.15,
+      delayChildren: 0.08,
+    },
+  },
+};
 
-const revealUp = {
-  hidden: { opacity: 0, y: 40 },
-  visible: (delay = 0) => ({
+const fadeInUp = {
+  hidden: { opacity: 0, y: 35 },
+  visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.8, delay, ease: [0.22, 1, 0.36, 1] },
-  }),
+    transition: {
+      duration: 0.7,
+      ease: [0.22, 1, 0.36, 1],
+    },
+  },
+};
+
+const agentListContainer = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.12,
+      delayChildren: 0.1,
+    },
+  },
 };
 
 const steps = [
@@ -87,29 +109,9 @@ export default function LandingPage() {
   const heroRef = useRef(null);
   const [typedIndex, setTypedIndex] = useState(0);
 
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      gsap.utils.toArray(".landing-reveal").forEach((section) => {
-        gsap.fromTo(
-          section,
-          { opacity: 0, y: 48 },
-          {
-            opacity: 1,
-            y: 0,
-            duration: 1,
-            ease: "power3.out",
-            scrollTrigger: {
-              trigger: section,
-              start: "top 82%",
-              toggleActions: "play none none none",
-            },
-          },
-        );
-      });
-    }, pageRef);
+  const snapRef = useRef(null);
 
-    return () => ctx.revert();
-  }, []);
+
 
   useEffect(() => {
     const intervalId = setInterval(() => {
@@ -122,9 +124,12 @@ export default function LandingPage() {
   return (
     <div
       ref={pageRef}
-      className="min-h-screen bg-[#050816] text-white overflow-x-hidden relative landing-page-container"
+      className="bg-[#050816] text-white overflow-x-hidden relative landing-page-container font-sans"
     >
       <CursorGlow />
+
+      {/* Sticky Curtain Reveal Footer (Sits at the bottom behind main content) */}
+      <CurtainFooter />
 
       <nav className="fixed inset-x-0 top-0 z-40 border-b border-white/8 bg-[#040816]/70 backdrop-blur-2xl">
         <div className="max-w-7xl mx-auto h-20 px-6 flex items-center justify-between">
@@ -163,105 +168,179 @@ export default function LandingPage() {
         </div>
       </nav>
 
-      <main>
-        {/* Hero Section */}
+      {/* Scroll Snap Container — only on landing page */}
+      <main
+        ref={snapRef}
+        style={{
+          height: "100vh",
+          overflowY: "scroll",
+          scrollSnapType: "y mandatory",
+          scrollBehavior: "smooth",
+        }}
+      >
+        {/* Main Content Sliding Curtain (covers footer until scrolled past Final Call) */}
+        <div className="relative z-10 bg-[#050816] shadow-[0_50px_100px_rgba(0,0,0,0.95)]">
         <section
-          className="relative min-h-[92vh] flex items-center justify-between px-6 sm:px-12 lg:px-16 pt-24 pb-12 overflow-hidden bg-[#050816]"
+          style={{ scrollSnapAlign: "start", scrollSnapStop: "always", minHeight: "100vh" }}
+          className="relative flex flex-col items-center justify-center px-6 pt-28 pb-20 overflow-hidden"
           ref={heroRef}
         >
-          {/* Subtle Ambient Background Gradients */}
-          <div className="absolute top-1/4 left-10 w-96 h-96 bg-purple-600/15 rounded-full blur-[120px] pointer-events-none" />
-          <div className="absolute bottom-10 right-1/4 w-[500px] h-[500px] bg-cyan-500/15 rounded-full blur-[140px] pointer-events-none" />
+          {/* DotField — deepest background layer */}
+          <div className="absolute inset-0 z-0">
+            <DotField
+              dotRadius={2}
+              dotSpacing={14}
+              bulgeStrength={80}
+              glowRadius={180}
+              sparkle={false}
+              waveAmplitude={0}
+              gradientFrom="rgba(139, 92, 246, 0.75)"
+              gradientTo="rgba(34, 211, 238, 0.65)"
+              glowColor="#0a0a12"
+            />
+          </div>
 
-          <div className="relative z-10 w-full max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-10">
-            {/* Left Side: Content */}
-            <div className="w-full lg:max-w-[580px] text-left flex flex-col items-start z-10">
-              {/* Badge */}
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-purple-500/30 bg-purple-500/10 backdrop-blur-md mb-6">
-                <Sparkles className="w-4 h-4 text-cyan-300 animate-pulse" />
-                <span className="text-xs uppercase tracking-widest font-semibold bg-gradient-to-r from-cyan-300 to-purple-300 bg-clip-text text-transparent">
-                  AI Placement Copilot
-                </span>
-              </div>
+          {/* SideRays — on top of dots */}
+          <SideRays
+            speed={2.0}
+            rayColor1="#a855f7"
+            rayColor2="#22d3ee"
+            intensity={1.5}
+            spread={1.8}
+            origin="top-right"
+            tilt={-10}
+            saturation={1.5}
+            blend={0.6}
+            falloff={1.5}
+            opacity={0.8}
+          />
 
-              {/* Main Heading */}
-              <h1 className="font-heading text-4xl sm:text-5xl xl:text-6xl font-extrabold tracking-tight leading-[1.12] text-white">
-                Turn Your Code Into{" "}
-                <span className="bg-gradient-to-r from-cyan-300 via-purple-400 to-fuchsia-400 bg-clip-text text-transparent">
-                  Placement Power
-                </span>
-              </h1>
+          <div className="relative z-10 text-center max-w-3xl mx-auto flex flex-col items-center">
+            {/* Line 1 — GradientText: fade-in-up animation */}
+            <motion.div
+              initial={{ opacity: 0, y: 40, filter: "blur(12px)" }}
+              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+              transition={{
+                duration: 0.85,
+                delay: 0.1,
+                ease: [0.16, 1, 0.3, 1],
+              }}
+            >
+              <GradientText
+                colors={[
+                  "#22d3ee",
+                  "#60a5fa",
+                  "#a78bfa",
+                  "#f472b6",
+                  "#34d399",
+                  "#22d3ee",
+                ]}
+                animationSpeed={18}
+                direction="horizontal"
+                yoyo={true}
+                className="hero-gradient-text text-6xl sm:text-7xl xl:text-[6rem] font-bold leading-[1.05] tracking-[-0.04em]"
+              >
+                Prepare Smarter
+              </GradientText>
+            </motion.div>
 
-              {/* Subtitle */}
-              <p className="mt-6 text-base sm:text-lg text-slate-300 leading-relaxed max-w-xl">
-                Connect your GitHub repo. PrepAI analyzes your code, architecture, and tech stack to generate placement-ready stories, viva prep, ATS resume bullets, and mock interviews.
-              </p>
+            {/* Line 2 — BlurText: fade-in-up animation */}
+            <motion.div
+              initial={{ opacity: 0, y: 40, filter: "blur(12px)" }}
+              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+              transition={{
+                duration: 0.85,
+                delay: 0.25,
+                ease: [0.16, 1, 0.3, 1],
+              }}
+              className="w-full"
+            >
+              <BlurText
+                text="Get Hired Faster."
+                delay={90}
+                animateBy="words"
+                direction="bottom"
+                stepDuration={0.55}
+                className="text-6xl sm:text-7xl xl:text-[6rem] font-bold leading-[1.05] tracking-[-0.04em] bg-gradient-to-r from-cyan-300 via-violet-400 to-purple-300 bg-clip-text text-transparent justify-center"
+              />
+            </motion.div>
 
-              {/* Action CTA Buttons */}
-              <div className="mt-8 flex flex-wrap items-center gap-4">
-                <Link
-                  to={token ? "/dashboard" : "/auth"}
-                  className="group inline-flex items-center gap-3 px-8 py-4 rounded-xl text-base font-bold text-white bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-500 shadow-[0_0_40px_rgba(168,85,247,0.4)] hover:shadow-[0_0_60px_rgba(168,85,247,0.7)] hover:scale-105 transition-all duration-300"
-                >
-                  Start for Free
-                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1.5 transition-transform" />
-                </Link>
+            {/* Subtitle — VariableProximity: fade-in-up */}
+            <motion.div
+              initial={{ opacity: 0, y: 35 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{
+                delay: 0.45,
+                duration: 0.8,
+                ease: [0.16, 1, 0.3, 1],
+              }}
+              className="mt-8 max-w-xl mx-auto"
+            >
+              <VariableProximity
+                label="Connect your GitHub repo. PrepAI reads your code and builds your placement kit — stories, viva prep, resume bullets, mock interview."
+                fromFontVariationSettings="'wght' 300, 'opsz' 9"
+                toFontVariationSettings="'wght' 700, 'opsz' 40"
+                containerRef={heroRef}
+                radius={120}
+                falloff="gaussian"
+                className="text-base text-slate-400 leading-relaxed font-sans"
+              />
+            </motion.div>
 
-                <a
-                  href="#how-it-works"
-                  className="px-6 py-4 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 hover:border-white/20 transition-all text-sm font-semibold text-slate-300 hover:text-white backdrop-blur-md"
-                >
-                  See how it works
-                </a>
-              </div>
-
-              {/* Mini Features Checklist */}
-              <div className="mt-10 grid grid-cols-2 gap-4 text-xs sm:text-sm text-slate-400 font-medium">
-                <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-cyan-400" />
-                  <span>GitHub Repository Ingestion</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-purple-400" />
-                  <span>7 Specialized AI Agents</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400" />
-                  <span>Real-time Viva Simulator</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-pink-400" />
-                  <span>ATS Resume Optimizer</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Right Side: Interactive 3D Spline Model */}
-            <div className="w-full lg:flex-1 h-[480px] sm:h-[550px] lg:h-[620px] relative flex items-center justify-center">
-              <spline-viewer
-                url="https://prod.spline.design/I2tSq-VJu2V8nZQO/scene.splinecode"
-                style={{ width: "100%", height: "100%", display: "block" }}
-              ></spline-viewer>
-            </div>
+            {/* CTA Buttons: fade-in-up */}
+            <motion.div
+              initial={{ opacity: 0, y: 35 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{
+                delay: 0.65,
+                duration: 0.8,
+                ease: [0.16, 1, 0.3, 1],
+              }}
+              className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4"
+            >
+              <MagneticButton
+                to={token ? "/dashboard" : "/auth"}
+                label="Start for Free"
+              />
+              <a
+                href="#how-it-works"
+                className="px-6 py-3.5 rounded-full border border-white/10 bg-white/5 hover:bg-white/10 transition-all text-sm font-medium text-slate-300"
+              >
+                See how it works
+              </a>
+            </motion.div>
           </div>
         </section>
 
-        <section id="how-it-works" className="relative py-28 px-6">
-          <div className="max-w-6xl mx-auto">
-            <div className="landing-reveal text-center max-w-2xl mx-auto">
-              <p className="text-cyan-200/80 text-sm uppercase tracking-[0.28em]">
+        <section id="how-it-works" style={{ scrollSnapAlign: "start", scrollSnapStop: "always", minHeight: "100vh", display: "flex", alignItems: "center" }} className="relative px-6">
+          <div className="max-w-6xl mx-auto w-full">
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.25 }}
+              variants={staggerContainer}
+              className="text-center max-w-2xl mx-auto"
+            >
+              <motion.p variants={fadeInUp} className="text-cyan-200/80 text-sm uppercase tracking-[0.28em]">
                 How it works
-              </p>
-              <h2 className="mt-4 text-4xl md:text-5xl font-semibold tracking-[-0.03em] leading-tight">
+              </motion.p>
+              <motion.h2 variants={fadeInUp} className="mt-4 text-4xl md:text-5xl font-semibold tracking-[-0.03em] leading-tight">
                 A smooth handoff from GitHub repo to interview prep.
-              </h2>
-            </div>
+              </motion.h2>
+            </motion.div>
 
-            <div className="mt-16 grid md:grid-cols-3 gap-6">
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.2 }}
+              variants={staggerContainer}
+              className="mt-16 grid md:grid-cols-3 gap-6"
+            >
               {steps.map((step, index) => (
                 <motion.div
                   key={step.title}
-                  className="landing-reveal rounded-[28px] border border-white/10 bg-white/[0.04] px-7 py-8 backdrop-blur-2xl shadow-[0_18px_60px_rgba(9,14,29,0.38)]"
+                  variants={fadeInUp}
+                  className="rounded-[28px] border border-white/10 bg-white/[0.04] px-7 py-8 backdrop-blur-2xl shadow-[0_18px_60px_rgba(9,14,29,0.38)]"
                   whileHover={{
                     y: -8,
                     rotateX: 4,
@@ -279,32 +358,45 @@ export default function LandingPage() {
                   <p className="text-slate-400 leading-relaxed">{step.copy}</p>
                 </motion.div>
               ))}
-            </div>
+            </motion.div>
           </div>
         </section>
 
-        <section id="features" className="relative py-28 px-6">
-          <div className="max-w-7xl mx-auto">
-            <div className="landing-reveal flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
+        <section id="features" style={{ scrollSnapAlign: "start", scrollSnapStop: "always", minHeight: "100vh", display: "flex", alignItems: "center" }} className="relative px-6">
+          <div className="max-w-7xl mx-auto w-full">
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.25 }}
+              variants={staggerContainer}
+              className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6"
+            >
               <div className="max-w-2xl">
-                <p className="text-cyan-200/80 text-sm uppercase tracking-[0.28em]">
+                <motion.p variants={fadeInUp} className="text-cyan-200/80 text-sm uppercase tracking-[0.28em]">
                   Features
-                </p>
-                <h2 className="mt-4 text-4xl md:text-5xl font-semibold tracking-[-0.03em] leading-tight">
+                </motion.p>
+                <motion.h2 variants={fadeInUp} className="mt-4 text-4xl md:text-5xl font-semibold tracking-[-0.03em] leading-tight">
                   Everything feels like a thinking system, not a text dump.
-                </h2>
+                </motion.h2>
               </div>
-              <p className="text-slate-400 max-w-xl">
+              <motion.p variants={fadeInUp} className="text-slate-400 max-w-xl">
                 Every card is designed to make the product feel fast,
                 intelligent, and premium under your cursor.
-              </p>
-            </div>
+              </motion.p>
+            </motion.div>
 
-            <div className="mt-14 grid md:grid-cols-2 xl:grid-cols-4 gap-6">
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.2 }}
+              variants={staggerContainer}
+              className="mt-14 grid md:grid-cols-2 xl:grid-cols-4 gap-6"
+            >
               {features.map((feature, index) => (
                 <motion.div
                   key={feature.title}
-                  className="landing-reveal rounded-[28px] border border-white/10 bg-white/[0.04] p-7 backdrop-blur-2xl relative overflow-hidden"
+                  variants={fadeInUp}
+                  className="rounded-[28px] border border-white/10 bg-white/[0.04] p-7 backdrop-blur-2xl relative overflow-hidden"
                   whileHover={{
                     y: -10,
                     rotateX: 6,
@@ -326,31 +418,51 @@ export default function LandingPage() {
                   </div>
                 </motion.div>
               ))}
-            </div>
+            </motion.div>
           </div>
         </section>
 
-        <section id="agents" className="relative py-28 px-6">
-          <div className="max-w-6xl mx-auto grid lg:grid-cols-[0.92fr_1.08fr] gap-10 items-center">
-            <div className="landing-reveal">
-              <p className="text-cyan-200/80 text-sm uppercase tracking-[0.28em]">
+        <section id="agents" style={{ scrollSnapAlign: "start", scrollSnapStop: "always", minHeight: "100vh", display: "flex", alignItems: "center" }} className="relative px-6">
+          <div className="max-w-6xl mx-auto w-full grid lg:grid-cols-[0.92fr_1.08fr] gap-10 items-center">
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.25 }}
+              variants={staggerContainer}
+            >
+              <motion.p variants={fadeInUp} className="text-cyan-200/80 text-sm uppercase tracking-[0.28em]">
                 AI agent graph
-              </p>
-              <h2 className="mt-4 text-4xl md:text-5xl font-semibold tracking-[-0.03em] leading-tight">
+              </motion.p>
+              <motion.h2 variants={fadeInUp} className="mt-4 text-4xl md:text-5xl font-semibold tracking-[-0.03em] leading-tight">
                 A visible chain of reasoning from code to interview confidence.
-              </h2>
-              <p className="mt-6 text-slate-400 max-w-xl leading-relaxed">
+              </motion.h2>
+              <motion.p variants={fadeInUp} className="mt-6 text-slate-400 max-w-xl leading-relaxed">
                 The system does not stop at a summary. It reads, reasons,
                 converts, scores, and prepares the candidate across multiple
                 linked layers.
-              </p>
-            </div>
+              </motion.p>
+            </motion.div>
 
-            <div className="landing-reveal rounded-[34px] border border-white/10 bg-white/[0.04] p-7 md:p-10 backdrop-blur-2xl">
-              <div className="grid sm:grid-cols-5 gap-4 items-center">
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.25 }}
+              variants={fadeInUp}
+              className="rounded-[34px] border border-white/10 bg-white/[0.04] p-7 md:p-10 backdrop-blur-2xl"
+            >
+              <motion.div
+                variants={agentListContainer}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.2 }}
+                className="grid sm:grid-cols-5 gap-4 items-center"
+              >
                 {agentFlow.map((agent, index) => (
                   <React.Fragment key={agent}>
-                    <div className="rounded-3xl border border-cyan-400/16 bg-slate-950/55 px-4 py-5 min-h-[118px] flex flex-col justify-between shadow-[0_0_40px_rgba(43,125,255,0.09)]">
+                    <motion.div
+                      variants={fadeInUp}
+                      className="rounded-3xl border border-cyan-400/16 bg-slate-950/55 px-4 py-5 min-h-[118px] flex flex-col justify-between shadow-[0_0_40px_rgba(43,125,255,0.09)]"
+                    >
                       <div className="w-10 h-10 rounded-2xl bg-white/6 border border-white/10 flex items-center justify-center">
                         <span className="text-cyan-200 text-sm font-semibold">
                           {index + 1}
@@ -359,7 +471,7 @@ export default function LandingPage() {
                       <p className="text-sm font-medium text-slate-100">
                         {agent}
                       </p>
-                    </div>
+                    </motion.div>
                     {index < agentFlow.length - 1 && (
                       <div className="hidden sm:flex items-center justify-center">
                         <motion.div
@@ -376,35 +488,53 @@ export default function LandingPage() {
                     )}
                   </React.Fragment>
                 ))}
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
           </div>
         </section>
 
 
-        <section className="relative py-28 px-6">
-          <div className="max-w-5xl mx-auto">
-            <div className="landing-reveal rounded-[36px] border border-cyan-400/18 bg-[linear-gradient(135deg,rgba(9,19,41,0.9),rgba(8,8,19,0.86))] px-8 py-14 md:px-14 flex flex-col items-center text-center shadow-[0_0_90px_rgba(43,125,255,0.16)]">
-              <p className="text-cyan-200/80 text-sm uppercase tracking-[0.28em]">
+        <section style={{ scrollSnapAlign: "start", scrollSnapStop: "always", minHeight: "100vh", display: "flex", alignItems: "center" }} className="relative px-6">
+          <div className="max-w-5xl mx-auto w-full">
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.25 }}
+              variants={staggerContainer}
+              className="rounded-[36px] border border-cyan-400/18 bg-[linear-gradient(135deg,rgba(9,19,41,0.9),rgba(8,8,19,0.86))] px-8 py-14 md:px-14 flex flex-col items-center text-center shadow-[0_0_90px_rgba(43,125,255,0.16)]"
+            >
+              <motion.p variants={fadeInUp} className="text-cyan-200/80 text-sm uppercase tracking-[0.28em]">
                 Final call
-              </p>
-              <h2 className="mt-4 text-4xl md:text-6xl font-semibold tracking-[-0.04em] leading-tight">
+              </motion.p>
+              <motion.h2 variants={fadeInUp} className="mt-4 text-4xl md:text-6xl font-semibold tracking-[-0.04em] leading-tight">
                 Ready to crack your placement?
-              </h2>
-              <p className="mt-6 max-w-2xl mx-auto text-lg text-slate-300 leading-relaxed text-center">
+              </motion.h2>
+              <motion.p variants={fadeInUp} className="mt-6 max-w-2xl mx-auto text-lg text-slate-300 leading-relaxed text-center">
                 Let the system read your project like an engineer, then turn it
                 into a sharper story, cleaner proof, and stronger interview
                 performance.
-              </p>
-              <div className="mt-10 flex justify-center">
+              </motion.p>
+              <motion.div variants={fadeInUp} className="mt-10 flex justify-center">
                 <MagneticButton
                   to={token ? "/dashboard" : "/auth"}
                   label="Start Free Analysis"
                 />
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
           </div>
         </section>
+        </div>
+
+        {/* Curtain Reveal Spacer: Scrolling past Final Call lifts the main content curtain to reveal CurtainFooter */}
+        <div
+          style={{
+            scrollSnapAlign: "start",
+            scrollSnapStop: "always",
+            minHeight: "520px",
+          }}
+          className="relative pointer-events-none"
+          aria-hidden="true"
+        />
       </main>
     </div>
   );

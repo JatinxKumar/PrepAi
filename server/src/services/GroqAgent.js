@@ -15,13 +15,14 @@ class GroqAgent {
     for (let i = 0; i < retries; i++) {
       try {
         const client = getGroqClient();
+        const model = process.env.GROQ_MODEL || "openai/gpt-oss-120b";
         const response = await client.chat.completions.create({
-          model: "llama-3.3-70b-versatile",
+          model,
           messages: [
             { role: "system", content: systemInstruction },
             { role: "user", content: prompt }
           ],
-          temperature: 0.7,
+          temperature: 0.2,
         });
 
         return response.choices[0].message.content;
