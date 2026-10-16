@@ -98,11 +98,9 @@ export default function AuthPage() {
 
         {/* Brand Header */}
         <div className="relative z-10">
-          <Link to="/" className="inline-flex items-center gap-3 group">
-            <div className="w-11 h-11 bg-[#D02020] border-2 border-white flex items-center justify-center text-white shadow-[3px_3px_0_#FFFFFF] group-hover:bg-[#F0C020] group-hover:text-[#111111] transition-colors">
-              <BrainCircuit className="w-6 h-6" />
-            </div>
-            <span className="font-['Outfit'] text-2xl font-black tracking-tight text-white">
+          <Link to="/" className="inline-flex items-center gap-2 group">
+            <Sparkles className="w-6 h-6 text-[#D02020] shrink-0 group-hover:scale-110 transition-transform" />
+            <span className="font-['Outfit'] text-2xl font-black tracking-tight text-white uppercase">
               PREP<span className="text-[#D02020]">AI</span>
             </span>
           </Link>
@@ -173,17 +171,14 @@ export default function AuthPage() {
         {/* Footer info */}
         <div className="relative z-10 pt-6 border-t border-white/15 flex items-center justify-between text-xs text-gray-400 font-['JetBrains_Mono']">
           <span>© 2026 PrepAI. All rights reserved.</span>
-          <span className="text-[#F0C020] font-bold uppercase flex items-center gap-1.5">
-            <span className="w-2 h-2 bg-[#F0C020] inline-block" />
-            Cockpit Online
-          </span>
+          
         </div>
       </div>
 
       {/* =========================================================================
           RIGHT AUTH FORM COLUMN (Clean Bauhaus Panel)
           ========================================================================= */}
-      <div className="flex-1 flex flex-col justify-center items-center p-6 sm:p-10 xl:p-16 bauhaus-canvas-bg min-h-screen relative">
+      <div className="flex-1 flex flex-col justify-center items-center p-6 sm:p-10 xl:p-16 py-12 bauhaus-canvas-bg min-h-screen relative overflow-y-auto">
         {/* Back to Home Button */}
         <Link
           to="/"
@@ -195,10 +190,8 @@ export default function AuthPage() {
         {/* Mobile Header (Visible on small screens only) */}
         <div className="lg:hidden w-full max-w-md mb-6 flex items-center justify-between">
           <Link to="/" className="inline-flex items-center gap-2">
-            <div className="w-9 h-9 bg-[#D02020] border-2 border-[#111111] flex items-center justify-center text-white shadow-[2px_2px_0_#111111]">
-              <BrainCircuit className="w-5 h-5" />
-            </div>
-            <span className="font-['Outfit'] text-xl font-black text-[#111111]">
+            <Sparkles className="w-5 h-5 text-[#D02020] shrink-0" />
+            <span className="font-['Outfit'] text-xl font-black text-[#111111] uppercase">
               PREP<span className="text-[#D02020]">AI</span>
             </span>
           </Link>
@@ -422,12 +415,12 @@ export default function AuthPage() {
               </p>
             )}
           </div>
-        </motion.div>
 
-        {/* Small Terms footnote */}
-        <p className="text-center text-[11px] font-['JetBrains_Mono'] text-[#777777] mt-6 max-w-sm">
-          By signing in, you agree to PrepAI's Code Grounding Verification and Placement Prep Terms.
-        </p>
+          {/* Small Terms footnote inside card */}
+          <p className="text-center text-[10px] font-['JetBrains_Mono'] text-[#777777] mt-5 pt-3 border-t border-[#EAEAEA] leading-relaxed">
+            By signing in, you agree to PrepAI's Code Grounding Verification and Placement Prep Terms.
+          </p>
+        </motion.div>
       </div>
     </div>
   );

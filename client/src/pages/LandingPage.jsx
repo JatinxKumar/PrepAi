@@ -161,12 +161,10 @@ const faqData = [
 
 function BauhausLogo() {
   return (
-    <div className="flex items-center gap-2.5">
-      <div className="relative flex items-center justify-center text-[#D02020]">
-        <Sparkles className="w-5 h-5 text-[#D02020]" />
-      </div>
-      <span className="font-extrabold tracking-tight text-xl uppercase font-['Outfit'] text-[#121212]">
-        Prep<span className="text-[#D02020]">AI</span>
+    <div className="flex items-center gap-2">
+      <Sparkles className="w-5 h-5 text-[#D02020] shrink-0" />
+      <span className="font-black tracking-tight text-xl uppercase font-['Outfit'] text-[#121212]">
+        PREP<span className="text-[#D02020]">AI</span>
       </span>
     </div>
   );
@@ -893,10 +891,10 @@ export default function LandingPage() {
           <div className="grid grid-cols-1 md:grid-cols-12 gap-12 pb-12 border-b-2 border-white/20">
             {/* Brand column */}
             <div className="md:col-span-5">
-              <div className="flex items-center gap-2.5">
-                <Sparkles className="w-6 h-6 text-[#F0C020]" />
-                <span className="font-extrabold tracking-tight text-2xl uppercase font-['Outfit'] text-white">
-                  Prep<span className="text-[#D02020]">AI</span>
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-6 h-6 text-[#D02020] shrink-0" />
+                <span className="font-black tracking-tight text-2xl uppercase font-['Outfit'] text-white">
+                  PREP<span className="text-[#D02020]">AI</span>
                 </span>
               </div>
 

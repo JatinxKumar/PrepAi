@@ -278,8 +278,8 @@ export default function Dashboard({ initialTab = "overview" }) {
       {/* Mobile Top Navbar (Visible on < md) */}
       <div className="md:hidden fixed top-0 left-0 right-0 h-16 bg-white border-b-[3px] border-[#111111] z-40 flex items-center justify-between px-4">
         <Link to="/" className="flex items-center gap-2">
-          <div className="w-3.5 h-3.5 bg-[#D02020] border border-[#111111]" />
-          <span className="font-extrabold tracking-tight text-lg uppercase font-['Outfit'] text-[#111111]">
+          <Sparkles className="w-5 h-5 text-[#D02020] shrink-0" />
+          <span className="font-black tracking-tight text-lg uppercase font-['Outfit'] text-[#111111]">
             PREP<span className="text-[#D02020]">AI</span>
           </span>
         </Link>
@@ -315,8 +315,8 @@ export default function Dashboard({ initialTab = "overview" }) {
         {/* Brand Header */}
         <div className="p-5 border-b-[3px] border-[#111111] flex items-center justify-between bg-white">
           <Link to="/" className="flex items-center gap-2.5 group">
-            <div className="w-4 h-4 bg-[#D02020] border-2 border-[#111111] shadow-[2px_2px_0_#111111]" />
-            <span className="font-extrabold tracking-tight text-xl uppercase font-['Outfit'] text-[#111111]">
+            <Sparkles className="w-5 h-5 text-[#D02020] shrink-0 group-hover:scale-110 transition-transform" />
+            <span className="font-black tracking-tight text-xl uppercase font-['Outfit'] text-[#111111]">
               PREP<span className="text-[#D02020]">AI</span>
             </span>
           </Link>
