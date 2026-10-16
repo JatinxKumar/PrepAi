@@ -22,7 +22,63 @@ function App() {
           path="/dashboard" 
           element={
             <ProtectedRoute>
-              <Dashboard />
+              <Dashboard initialTab="overview" />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/new-analysis" 
+          element={
+            <ProtectedRoute>
+              <Dashboard initialTab="upload" />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/project-story" 
+          element={
+            <ProtectedRoute>
+              <Dashboard initialTab="story" />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/analysis-results" 
+          element={
+            <ProtectedRoute>
+              <Dashboard initialTab="analysis" />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/compare-projects" 
+          element={
+            <ProtectedRoute>
+              <Dashboard initialTab="compare" />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/viva-prep" 
+          element={
+            <ProtectedRoute>
+              <Dashboard initialTab="viva" />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/resume-vault" 
+          element={
+            <ProtectedRoute>
+              <Dashboard initialTab="resume" />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/mock-interview" 
+          element={
+            <ProtectedRoute>
+              <Dashboard initialTab="interview" />
             </ProtectedRoute>
           } 
         />

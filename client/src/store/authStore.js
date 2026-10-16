@@ -10,6 +10,14 @@ const useAuthStore = create((set) => ({
     set({ user, token });
   },
 
+  updateUser: (updatedFields) => {
+    set((state) => {
+      const nextUser = { ...(state.user || {}), ...updatedFields };
+      localStorage.setItem('dna_user', JSON.stringify(nextUser));
+      return { user: nextUser };
+    });
+  },
+
   logout: () => {
     localStorage.removeItem('dna_user');
     localStorage.removeItem('dna_token');

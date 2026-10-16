@@ -1,4 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Edu+SA+Beginner:wght@400..700&family=Space+Grotesk:wght@300..700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Edu+SA+Beginner:wght@400..700&family=Outfit:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@300..700&family=JetBrains+Mono:wght@400;500;700;800&display=swap');
+@import "./styles/theme.css";
 @import "tailwindcss";
 
 @theme {
@@ -9,6 +10,13 @@
   --color-neon-border: rgba(170, 59, 255, 0.5);
   --font-sans: 'Space Grotesk', system-ui, sans-serif;
   --font-heading: 'Space Grotesk', system-ui, sans-serif;
+  --font-bauhaus: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+  --color-bauhaus-bg: #F0F0F0;
+  --color-bauhaus-black: #121212;
+  --color-bauhaus-red: #D02020;
+  --color-bauhaus-blue: #1040C0;
+  --color-bauhaus-yellow: #F0C020;
+  --color-bauhaus-muted: #E0E0E0;
 }
 
 /* Base */
@@ -24,9 +32,9 @@ html {
 
 body {
   margin: 0;
-  font-family: 'Space Grotesk', system-ui, sans-serif;
-  background-color: #11122d;
-  color: #f3f4f6;
+  font-family: 'Outfit', 'Space Grotesk', system-ui, sans-serif;
+  background-color: #F0F0F0;
+  color: #111111;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -38,10 +46,20 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: 'Space Grotesk', system-ui, sans-serif;
-  color: #ffffff;
-  font-weight: 700;
+  font-family: 'Outfit', 'Space Grotesk', system-ui, sans-serif;
+  color: inherit;
+  font-weight: 800;
   margin: 0;
+}
+
+/* Headings default to black unless explicitly assigned text-white */
+h1:not(.text-white):not([class*="text-white"]),
+h2:not(.text-white):not([class*="text-white"]),
+h3:not(.text-white):not([class*="text-white"]),
+h4:not(.text-white):not([class*="text-white"]),
+h5:not(.text-white):not([class*="text-white"]),
+h6:not(.text-white):not([class*="text-white"]) {
+  color: #111111;
 }
 
 p {
@@ -361,6 +379,71 @@ p {
   color: #ffffff;
   filter: drop-shadow(0 0 10px rgba(168, 85, 247, 0.85)) drop-shadow(0 0 20px rgba(192, 132, 252, 0.5));
   transform: translateY(-2px);
+}
+
+/* ==========================================================================
+   BAUHAUS DESIGN SYSTEM UTILITIES
+   ========================================================================== */
+
+.bauhaus-page {
+  font-family: 'Outfit', sans-serif;
+  background-color: #F0F0F0;
+  color: #121212;
+}
+
+.bauhaus-page h1,
+.bauhaus-page h2,
+.bauhaus-page h3,
+.bauhaus-page h4,
+.bauhaus-page h5,
+.bauhaus-page h6 {
+  font-family: 'Outfit', sans-serif;
+  color: #121212;
+}
+
+.bauhaus-dot-pattern {
+  background-image: radial-gradient(#121212 1.5px, transparent 1.5px);
+  background-size: 20px 20px;
+}
+
+.bauhaus-dot-pattern-light {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.4) 1.5px, transparent 1.5px);
+  background-size: 20px 20px;
+}
+
+.bauhaus-grid-pattern {
+  background-size: 32px 32px;
+  background-image: linear-gradient(to right, rgba(18, 18, 18, 0.08) 1px, transparent 1px),
+                    linear-gradient(to bottom, rgba(18, 18, 18, 0.08) 1px, transparent 1px);
+}
+
+.bauhaus-shadow-sm {
+  box-shadow: 4px 4px 0px 0px #121212;
+}
+
+.bauhaus-shadow {
+  box-shadow: 6px 6px 0px 0px #121212;
+}
+
+.bauhaus-shadow-lg {
+  box-shadow: 8px 8px 0px 0px #121212;
+}
+
+.bauhaus-shadow-white {
+  box-shadow: 6px 6px 0px 0px #FFFFFF;
+}
+
+.bauhaus-btn-press {
+  transition: transform 0.15s ease-out, box-shadow 0.15s ease-out;
+}
+
+.bauhaus-btn-press:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0px 0px #121212 !important;
+}
+
+.bauhaus-triangle-clip {
+  clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
 }
 
 
