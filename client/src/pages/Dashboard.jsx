@@ -1,50 +1,49 @@
 import axios from "axios";
 import { AnimatePresence, motion } from "framer-motion";
 import {
-    BarChart3,
-    BookOpen,
-    BrainCircuit,
-    Briefcase,
-    Calendar,
-    Check,
-    CheckSquare,
-    ChevronDown,
-    ChevronRight,
-    Download,
-    ExternalLink,
-    FileText,
-    FileUp,
-    GitCompare,
-    History,
-    LayoutDashboard,
-    Lightbulb,
-    Loader2,
-    LogOut,
-    Menu,
-    MessageSquare,
-    PlayCircle,
-    RefreshCcw,
-    Settings,
-    Shield,
-    Sparkles,
-    Target,
-    Trash2,
-    Trophy,
-    UploadCloud,
-    User,
-    Zap,
-    X,
-    Plus,
-    ArrowUpRight,
-    Edit3,
+  BarChart3,
+  BookOpen,
+  BrainCircuit,
+  Briefcase,
+  Calendar,
+  Check,
+  CheckSquare,
+  ChevronDown,
+  ChevronRight,
+  Download,
+  ExternalLink,
+  FileText,
+  FileUp,
+  GitCompare,
+  History,
+  LayoutDashboard,
+  Lightbulb,
+  Loader2,
+  LogOut,
+  Menu,
+  MessageSquare,
+  PlayCircle,
+  RefreshCcw,
+  Settings,
+  Shield,
+  Sparkles,
+  Target,
+  Trash2,
+  Trophy,
+  UploadCloud,
+  User,
+  Zap,
+  X,
+  Plus,
+  ArrowUpRight,
+  Edit3,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import AIResumeTailor from "../components/AIResumeTailor";
 import SideRays from "../components/SideRays";
 import useAuthStore from "../store/authStore";
-
-const API_URL = import.meta.env.VITE_API_URL || "/api";
+import { API_URL } from "../config/api";
 
 
 const HISTORY_KEY = "project-dna-history";
@@ -245,11 +244,11 @@ export default function Dashboard({ initialTab = "overview" }) {
   const totalRepos = history.length;
   const avgConfidence = totalRepos > 0
     ? Math.round(
-        history.reduce((acc, p) => {
-          const score = p?.analysis?.healthScore?.overall || getProjectHealthScore(p)?.overall || 75;
-          return acc + score;
-        }, 0) / totalRepos
-      )
+      history.reduce((acc, p) => {
+        const score = p?.analysis?.healthScore?.overall || getProjectHealthScore(p)?.overall || 75;
+        return acc + score;
+      }, 0) / totalRepos
+    )
     : 0;
   const totalVivaQuestions = history.reduce((acc, p) => {
     return acc + (p?.vivaPrep?.length || 0);
@@ -308,9 +307,8 @@ export default function Dashboard({ initialTab = "overview" }) {
 
       {/* Sidebar: Desktop & Mobile Drawer */}
       <aside
-        className={`fixed md:static inset-y-0 left-0 z-50 w-72 md:w-64 border-r-[3px] border-[#111111] bg-white flex flex-col shrink-0 print:hidden transition-transform duration-200 ease-out ${
-          mobileNavOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
-        }`}
+        className={`fixed md:static inset-y-0 left-0 z-50 w-72 md:w-64 border-r-[3px] border-[#111111] bg-white flex flex-col shrink-0 print:hidden transition-transform duration-200 ease-out ${mobileNavOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
+          }`}
       >
         {/* Brand Header */}
         <div className="p-5 border-b-[3px] border-[#111111] flex items-center justify-between bg-white">
@@ -337,11 +335,10 @@ export default function Dashboard({ initialTab = "overview" }) {
               <button
                 key={tab.id}
                 onClick={() => handleTabClick(tab)}
-                className={`w-full flex items-center gap-3 px-3.5 py-3 text-xs font-bold uppercase tracking-wider transition-all duration-100 ${
-                  isActive
+                className={`w-full flex items-center gap-3 px-3.5 py-3 text-xs font-bold uppercase tracking-wider transition-all duration-100 ${isActive
                     ? "bg-[#F0C020] text-[#111111]"
                     : "text-[#111111] hover:bg-black/5"
-                }`}
+                  }`}
               >
                 <tab.icon className="w-4 h-4 text-[#111111]" />
                 <span className="flex-1 text-left font-['JetBrains_Mono'] text-[#111111]">{tab.label}</span>
@@ -355,7 +352,7 @@ export default function Dashboard({ initialTab = "overview" }) {
 
         {/* User Card with Edit Button */}
         <div className="p-3 border-t-[3px] border-[#111111] bg-[#F0F0F0]">
-          <div 
+          <div
             onClick={() => setProfileModalOpen(true)}
             className="flex items-center gap-3 p-2.5 bg-white border-2 border-[#111111] shadow-[3px_3px_0_#111111] hover:bg-[#F0C020] transition-colors cursor-pointer"
             title="Click to edit profile"
@@ -407,7 +404,7 @@ export default function Dashboard({ initialTab = "overview" }) {
                   </p>
                 )}
             </div>
-            
+
             <div className="flex items-center gap-3">
               {activeTab !== "upload" && (
                 <button
@@ -935,7 +932,7 @@ function HistorySection({ history, isLoading, onSelect, onDelete }) {
               >
                 <Trash2 className="w-4 h-4" />
               </button>
-              <button 
+              <button
                 type="button"
                 className="px-4 py-2 bg-[#F0C020] border-2 border-[#111111] text-[#111111] font-bold text-xs uppercase font-['JetBrains_Mono'] flex items-center gap-1.5 shadow-[2px_2px_0_#111111] group-hover:bg-[#111111] group-hover:text-white transition-all"
               >
@@ -1196,13 +1193,12 @@ function AgentPipeline({ stages, activeStage }) {
               return (
                 <div
                   key={stage.title}
-                  className={`border-[2px] p-3 text-left transition-all ${
-                    isActive
+                  className={`border-[2px] p-3 text-left transition-all ${isActive
                       ? "bg-[#D02020] text-white border-[#111111] shadow-[4px_4px_0_#111111]"
                       : isDone
                         ? "bg-[#F0C020] text-[#111111] border-[#111111]"
                         : "bg-white text-[#555555] border-[#CCCCCC]"
-                  }`}
+                    }`}
                 >
                   <div className="w-8 h-8 border border-[#111111] bg-white flex items-center justify-center mb-2 text-[#111111]">
                     {isDone ? (
@@ -1769,9 +1765,8 @@ function MockInterviewSection({ data }) {
               className={`flex gap-4 ${msg.sender === "user" ? "flex-row-reverse" : ""}`}
             >
               <div
-                className={`w-9 h-9 border-2 border-[#111111] flex items-center justify-center shrink-0 font-bold text-xs ${
-                  msg.sender === "ai" ? "bg-[#1040C0] text-white shadow-[2px_2px_0_#111111]" : "bg-[#F0C020] text-[#111111] shadow-[2px_2px_0_#111111]"
-                }`}
+                className={`w-9 h-9 border-2 border-[#111111] flex items-center justify-center shrink-0 font-bold text-xs ${msg.sender === "ai" ? "bg-[#1040C0] text-white shadow-[2px_2px_0_#111111]" : "bg-[#F0C020] text-[#111111] shadow-[2px_2px_0_#111111]"
+                  }`}
               >
                 {msg.sender === "ai" ? (
                   <MessageSquare className="w-4 h-4 text-white" />
@@ -1780,11 +1775,10 @@ function MockInterviewSection({ data }) {
                 )}
               </div>
               <div
-                className={`p-4 max-w-2xl text-xs sm:text-sm leading-relaxed border-2 border-[#111111] shadow-[3px_3px_0_#111111] ${
-                  msg.sender === "ai"
+                className={`p-4 max-w-2xl text-xs sm:text-sm leading-relaxed border-2 border-[#111111] shadow-[3px_3px_0_#111111] ${msg.sender === "ai"
                     ? "bg-[#F0F0F0] text-[#111111] font-sans"
                     : "bg-white text-[#111111] font-sans"
-                }`}
+                  }`}
               >
                 {msg.message}
               </div>
@@ -1828,11 +1822,10 @@ function MockInterviewSection({ data }) {
               type="button"
               onClick={handleVoiceInput}
               disabled={!data}
-              className={`absolute right-3 top-1/2 -translate-y-1/2 p-2 border border-[#111111] transition-all ${
-                isRecording
+              className={`absolute right-3 top-1/2 -translate-y-1/2 p-2 border border-[#111111] transition-all ${isRecording
                   ? "bg-[#D02020] text-white animate-pulse"
                   : "bg-white text-[#111111] hover:bg-[#F0C020]"
-              }`}
+                }`}
               title="Voice to Text Input"
             >
               <svg
@@ -2038,22 +2031,22 @@ function getProjectHealthScore(project) {
   const codeQuality = Math.min(
     95,
     56 +
-      (has("typescript") ? 12 : 0) +
-      (has("test") ? 10 : 0) +
-      (has("component") ? 6 : 0),
+    (has("typescript") ? 12 : 0) +
+    (has("test") ? 10 : 0) +
+    (has("component") ? 6 : 0),
   );
   const scalability = Math.min(
     95,
     54 +
-      (has("supabase") || has("mongodb") || has("database") ? 12 : 0) +
-      (has("api") ? 8 : 0),
+    (has("supabase") || has("mongodb") || has("database") ? 12 : 0) +
+    (has("api") ? 8 : 0),
   );
   const uiux = Math.min(
     95,
     60 +
-      (has("tailwind") ? 10 : 0) +
-      (has("radix") ? 8 : 0) +
-      (has("react") ? 5 : 0),
+    (has("tailwind") ? 10 : 0) +
+    (has("radix") ? 8 : 0) +
+    (has("react") ? 5 : 0),
   );
   const overall = Math.round(
     (performance + codeQuality + scalability + uiux) / 4,
@@ -2556,11 +2549,10 @@ function ConfirmDialog({
             <button
               type="button"
               onClick={onConfirm}
-              className={`px-5 py-2.5 text-xs font-mono font-bold uppercase border-2 border-[#111111] shadow-[3px_3px_0px_#111111] transition-transform active:translate-x-0.5 active:translate-y-0.5 ${
-                confirmTone === "danger"
+              className={`px-5 py-2.5 text-xs font-mono font-bold uppercase border-2 border-[#111111] shadow-[3px_3px_0px_#111111] transition-transform active:translate-x-0.5 active:translate-y-0.5 ${confirmTone === "danger"
                   ? "bg-[#D02020] hover:bg-red-700 text-white"
                   : "bg-[#1040C0] hover:bg-blue-800 text-white"
-              }`}
+                }`}
             >
               {confirmLabel}
             </button>

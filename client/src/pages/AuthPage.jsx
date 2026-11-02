@@ -17,8 +17,7 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import { signInWithGoogle } from "../config/firebase";
 import useAuthStore from "../store/authStore";
-
-const API_URL = import.meta.env.VITE_API_URL || "/api";
+import { API_URL } from "../config/api";
 
 export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);
@@ -52,7 +51,7 @@ export default function AuthPage() {
     } catch (err) {
       setError(
         err.response?.data?.error ||
-          "Something went wrong. Is the backend running?",
+        "Something went wrong. Is the backend running?",
       );
     } finally {
       setIsLoading(false);
@@ -72,8 +71,13 @@ export default function AuthPage() {
       navigate("/dashboard");
     } catch (err) {
       console.error("Google Login Error:", err);
-      const errorMessage =
-        err.response?.data?.error || err.message || "Google Sign-In failed.";
+      let rawError = err.response?.data?.error || err.response?.data?.message || err.message;
+      if (typeof rawError === "object" && rawError !== null) {
+        rawError = rawError.message || JSON.stringify(rawError);
+      }
+      const errorMessage = (typeof rawError === "string" && rawError.trim())
+        ? rawError
+        : "Google Sign-In failed. Please check your connection and try again.";
       setError(`Auth Error: ${errorMessage}`);
     } finally {
       setIsLoading(false);
@@ -171,7 +175,7 @@ export default function AuthPage() {
         {/* Footer info */}
         <div className="relative z-10 pt-6 border-t border-white/15 flex items-center justify-between text-xs text-gray-400 font-['JetBrains_Mono']">
           <span>© 2026 PrepAI. All rights reserved.</span>
-          
+
         </div>
       </div>
 
@@ -227,11 +231,10 @@ export default function AuthPage() {
                 setIsLogin(true);
                 setError("");
               }}
-              className={`py-2 text-xs font-black uppercase font-['JetBrains_Mono'] tracking-wider transition-all ${
-                isLogin
+              className={`py-2 text-xs font-black uppercase font-['JetBrains_Mono'] tracking-wider transition-all ${isLogin
                   ? "bg-[#F0C020] text-[#111111] border-2 border-[#111111] shadow-[2px_2px_0_#111111]"
                   : "bg-transparent text-[#555555] border-2 border-transparent hover:text-[#111111]"
-              }`}
+                }`}
             >
               Login
             </button>
@@ -241,11 +244,10 @@ export default function AuthPage() {
                 setIsLogin(false);
                 setError("");
               }}
-              className={`py-2 text-xs font-black uppercase font-['JetBrains_Mono'] tracking-wider transition-all ${
-                !isLogin
+              className={`py-2 text-xs font-black uppercase font-['JetBrains_Mono'] tracking-wider transition-all ${!isLogin
                   ? "bg-[#F0C020] text-[#111111] border-2 border-[#111111] shadow-[2px_2px_0_#111111]"
                   : "bg-transparent text-[#555555] border-2 border-transparent hover:text-[#111111]"
-              }`}
+                }`}
             >
               Sign Up
             </button>

@@ -35,7 +35,7 @@ import {
 } from "lucide-react";
 import useAuthStore from "../store/authStore";
 
-const API_URL = import.meta.env.VITE_API_URL || "/api";
+import { API_URL } from "../config/api";
 
 export default function AIResumeTailor() {
   const [file, setFile] = useState(null);
@@ -445,8 +445,8 @@ export default function AIResumeTailor() {
                         </span>
                         <span
                           className={`text-[9px] font-mono uppercase font-bold px-1 py-0.2 border border-[#111111] ${item.importance === "required"
-                              ? "bg-[#D02020] text-white"
-                              : "bg-[#F0C020] text-[#111111]"
+                            ? "bg-[#D02020] text-white"
+                            : "bg-[#F0C020] text-[#111111]"
                             }`}
                         >
                           {item.importance}
@@ -519,8 +519,8 @@ export default function AIResumeTailor() {
                                 <StatusBadge status={item.status} />
                                 <span
                                   className={`text-[9px] font-mono font-bold uppercase px-1.5 py-0.5 border border-[#111111] ${item.importance === "required"
-                                      ? "bg-[#D02020] text-white"
-                                      : "bg-[#F0C020] text-[#111111]"
+                                    ? "bg-[#D02020] text-white"
+                                    : "bg-[#F0C020] text-[#111111]"
                                     }`}
                                 >
                                   {item.importance}
@@ -579,12 +579,12 @@ export default function AIResumeTailor() {
                 <div key={idx} className="bauhaus-card p-4 bg-white">
                   <div className="flex items-start gap-3">
                     <div className={`w-7 h-7 border-2 border-[#111111] shrink-0 flex items-center justify-center mt-0.5 ${rec.type === "strengthen"
-                        ? "bg-[#1040C0] text-white"
-                        : rec.type === "clarify"
-                          ? "bg-[#F0C020] text-[#111111]"
-                          : rec.type === "unsupported"
-                            ? "bg-[#D02020] text-white"
-                            : "bg-[#111111] text-white"
+                      ? "bg-[#1040C0] text-white"
+                      : rec.type === "clarify"
+                        ? "bg-[#F0C020] text-[#111111]"
+                        : rec.type === "unsupported"
+                          ? "bg-[#D02020] text-white"
+                          : "bg-[#111111] text-white"
                       }`}>
                       {rec.type === "strengthen" && <Zap className="w-3.5 h-3.5" />}
                       {rec.type === "clarify" && <Brain className="w-3.5 h-3.5" />}
@@ -707,8 +707,8 @@ export default function AIResumeTailor() {
                 onDrop={handleDrop}
                 onClick={() => fileInputRef.current?.click()}
                 className={`mt-4 border-3 border-dashed border-[#111111] p-8 text-center cursor-pointer transition-colors flex flex-col items-center justify-center min-h-[220px] ${isDragging
-                    ? "bg-[#F0C020]"
-                    : "bg-[#F0F0F0] hover:bg-white"
+                  ? "bg-[#F0C020]"
+                  : "bg-[#F0F0F0] hover:bg-white"
                   }`}
               >
                 <div className="w-14 h-14 bg-white border-2 border-[#111111] shadow-[3px_3px_0px_#111111] flex items-center justify-center mb-4 text-[#1040C0]">
@@ -868,8 +868,8 @@ export default function AIResumeTailor() {
           <div className="flex items-center gap-2">
             <span
               className={`w-2.5 h-2.5 border border-[#111111] ${jobDescription.trim()
-                  ? "bg-[#1040C0]"
-                  : "bg-gray-400"
+                ? "bg-[#1040C0]"
+                : "bg-gray-400"
                 }`}
             />
             <span className={jobDescription.trim() ? "text-[#111111]" : "text-gray-500"}>
@@ -884,8 +884,8 @@ export default function AIResumeTailor() {
           disabled={!isFormValid || isAnalyzing}
           onClick={handleAnalyzeMatch}
           className={`w-full sm:w-auto px-8 py-3.5 font-mono font-black uppercase text-xs transition-transform flex items-center justify-center gap-2.5 border-3 border-[#111111] ${isFormValid && !isAnalyzing
-              ? "bg-[#D02020] text-white shadow-[4px_4px_0px_#111111] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 cursor-pointer"
-              : "bg-[#E5E5E5] text-gray-500 cursor-not-allowed shadow-none"
+            ? "bg-[#D02020] text-white shadow-[4px_4px_0px_#111111] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 cursor-pointer"
+            : "bg-[#E5E5E5] text-gray-500 cursor-not-allowed shadow-none"
             }`}
         >
           {isAnalyzing ? (
