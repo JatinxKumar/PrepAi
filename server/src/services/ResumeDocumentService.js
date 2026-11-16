@@ -1,10 +1,25 @@
 const fs = require("fs");
 const path = require("path");
 const PDFDocument = require("pdfkit");
-const { PDFParse } = require("pdf-parse");
 const mammoth = require("mammoth");
 
-const RESUME_UPLOAD_DIR = path.join(
+// Lazy load PDF parser on demand so importing this service doesn't execute parser initialization during server cold boot
+let cachedPdfParser = null;
+const getPdfParser = () => {
+  if (!cachedPdfParser) {
+    try {
+      cachedPdfParser = require("pdf-parse-new");
+    } catch (err) {
+      console.error("PDF parser (pdf-parse-new) failed to load:", err.message);
+      throw new Error("PDF parser dependency unavailable.");
+    }
+  }
+  return cachedPdfParser;
+};
+
+const os = require("os");
+
+const DEFAULT_UPLOAD_DIR = path.join(
   __dirname,
   "..",
   "..",
@@ -12,8 +27,21 @@ const RESUME_UPLOAD_DIR = path.join(
   "resumes",
 );
 
+let RESUME_UPLOAD_DIR = DEFAULT_UPLOAD_DIR;
+
 const ensureResumeDirectory = () => {
-  fs.mkdirSync(RESUME_UPLOAD_DIR, { recursive: true });
+  try {
+    fs.mkdirSync(RESUME_UPLOAD_DIR, { recursive: true });
+  } catch (err) {
+    // If running in a read-only serverless filesystem like AWS Lambda/Vercel
+    const tmpDir = path.join(os.tmpdir(), "prepai", "uploads", "resumes");
+    try {
+      fs.mkdirSync(tmpDir, { recursive: true });
+      RESUME_UPLOAD_DIR = tmpDir;
+    } catch (tmpErr) {
+      console.warn("Failed to create temporary resume directory:", tmpErr.message);
+    }
+  }
   return RESUME_UPLOAD_DIR;
 };
 
@@ -22,13 +50,9 @@ const parseResumeFile = async (filePath, mimeType = "", originalName = "") => {
   const buffer = fs.readFileSync(filePath);
 
   if (mimeType.includes("pdf") || extension === ".pdf") {
-    const parser = new PDFParse({ data: buffer });
-    try {
-      const parsed = await parser.getText();
-      return parsed.text || "";
-    } finally {
-      await parser.destroy();
-    }
+    const parsePdf = getPdfParser();
+    const parsed = await parsePdf(buffer);
+    return parsed?.text || "";
   }
 
   if (mimeType.includes("word") || extension === ".docx") {
@@ -106,4 +130,5 @@ module.exports = {
   writeTextPdf,
   buildResumeTextPdf,
   RESUME_UPLOAD_DIR,
+  getResumeUploadDir: () => RESUME_UPLOAD_DIR,
 };

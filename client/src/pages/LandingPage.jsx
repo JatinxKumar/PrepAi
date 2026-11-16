@@ -1,30 +1,25 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import {
   ArrowRight,
-  Upload,
-  Search,
-  Download,
-  Sparkles,
   BrainCircuit,
-  FileText,
-  MessageSquare,
-  ChevronDown,
   Check,
-  Code2,
-  Terminal,
+  CheckCircle2,
+  ChevronDown,
+  Copy,
+  Download,
+  FileText,
   Layers,
-  Cpu,
-  ShieldCheck,
-  Circle,
-  Square,
-  Triangle,
   Menu,
+  MessageSquare,
+  Search,
+  ShieldCheck,
+  Sparkles,
+  Terminal,
+  Upload,
   X,
-  Target,
-  Zap,
 } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import useAuthStore from "../store/authStore";
 
 // ==========================================
@@ -32,36 +27,53 @@ import useAuthStore from "../store/authStore";
 // ==========================================
 
 const statsData = [
-  { value: "7", label: "Specialized AI Agents", shape: "circle", bg: "#1040C0", textColor: "text-white" },
-  { value: "100%", label: "Code-Grounded Truth", shape: "square", bg: "#D02020", textColor: "text-white" },
-  { value: "0", label: "Generic Hallucinations", shape: "rotated-square", bg: "#FFFFFF", textColor: "text-black" },
-  { value: "3x", label: "Faster Interview Readiness", shape: "circle", bg: "#121212", textColor: "text-white" },
+  {
+    value: "01",
+    label: "Connect a repository",
+    shape: "circle",
+    bg: "#1040C0",
+    textColor: "text-white",
+  },
+  {
+    value: "02",
+    label: "Review your project",
+    shape: "square",
+    bg: "#D02020",
+    textColor: "text-white",
+  },
+  {
+    value: "03",
+    label: "Prepare for interviews",
+    shape: "rotated-square",
+    bg: "#FFFFFF",
+    textColor: "text-black",
+  },
 ];
 
 const stepsData = [
   {
     step: "01",
-    title: "Ingest Repository",
-    tag: "Source Analysis",
-    copy: "Drop your GitHub URL. PrepAI unpacks real commits, dependencies, schemas, and architectural topologies directly from source.",
+    title: "Add Your Repository",
+    tag: "Start here",
+    copy: "Add your GitHub repository URL to get started.",
     icon: Upload,
     accent: "#D02020",
     shape: "square",
   },
   {
     step: "02",
-    title: "Multi-Agent Extraction",
-    tag: "Reasoning Graph",
-    copy: "Our 7-agent network cross-examines your design decisions, identifying edge cases, tradeoffs, and defensive interview angles.",
+    title: "Analyse Your Code",
+    tag: "Understand the project",
+    copy: "PrepAI examines your project structure, source files and dependencies to understand how your application works.",
     icon: Search,
     accent: "#1040C0",
     shape: "circle",
   },
   {
     step: "03",
-    title: "Placement Kit Output",
-    tag: "Interview Ready",
-    copy: "Walk into viva & tech screens with structured architecture walkthroughs, defendable stories, and verified resume bullets.",
+    title: "Generate Your Placement Kit",
+    tag: "Prepare your materials",
+    copy: "Get project explanations, technical viva questions, architecture insights and resume-ready bullet points.",
     icon: Download,
     accent: "#F0C020",
     shape: "triangle",
@@ -70,49 +82,49 @@ const stepsData = [
 
 const featuresData = [
   {
-    title: "Project Story Generator",
-    tag: "Narrative Engine",
-    copy: "Transforms raw commits into structured STAR-method technical narratives that sound like senior engineering leadership.",
+    title: "Project Story",
+    tag: "Project explanation",
+    copy: "Get a structured overview of your project, its architecture and how its main parts work together.",
     icon: Sparkles,
     cornerColor: "#D02020",
     shape: "square",
   },
   {
-    title: "Viva Prep AI",
-    tag: "Deep Technical Defense",
-    copy: "Anticipates tough interviewer questions based on your actual tech stack, database bottlenecks, and concurrency constraints.",
+    title: "Technical Viva Preparation",
+    tag: "Practice questions",
+    copy: "Review technical questions and suggested answers based on the project analysis.",
     icon: BrainCircuit,
     cornerColor: "#1040C0",
     shape: "circle",
   },
   {
-    title: "Resume Bullet Engine",
-    tag: "Measurable Impact",
-    copy: "Pulls out quantified impact, scope, and technical complexity into clean, ATS-compliant bullet points grounded in code.",
+    title: "AI Resume Builder",
+    tag: "Project-based resume points",
+    copy: "Generate resume bullet point drafts from the features and technologies identified in your project.",
     icon: FileText,
     cornerColor: "#F0C020",
     shape: "triangle",
   },
   {
-    title: "Mock Interview Simulator",
-    tag: "Interactive Defense",
-    copy: "Pressure-tests your project understanding in real time with progressive follow-ups until your explanations are airtight.",
+    title: "Mock Interview",
+    tag: "Interview practice",
+    copy: "Practise discussing your project in a chat-based interview and get follow-up questions.",
     icon: MessageSquare,
     cornerColor: "#D02020",
     shape: "circle",
   },
   {
-    title: "System Architecture Mapper",
-    tag: "Topology Visualizer",
-    copy: "Reconstructs component boundaries, API flows, state machines, and data stores into crisp architectural mental models.",
+    title: "Architecture Summary",
+    tag: "Architecture overview",
+    copy: "Explore a written summary of the system architecture, data flow and component interactions.",
     icon: Layers,
     cornerColor: "#1040C0",
     shape: "square",
   },
   {
-    title: "Code Quality & Vulnerabilities",
-    tag: "Static Verification",
-    copy: "Flags security oversights, memory leaks, and anti-patterns before recruiters or technical evaluators spot them.",
+    title: "Code Quality Analysis",
+    tag: "Potential improvements",
+    copy: "Review suggested improvements based on the repository analysis. Suggestions may need your own technical review.",
     icon: ShieldCheck,
     cornerColor: "#F0C020",
     shape: "circle",
@@ -120,40 +132,96 @@ const featuresData = [
 ];
 
 const agentGraph = [
-  { id: "01", name: "Code Analyzer", role: "AST & Dependency Parsing", bg: "#FFFFFF", shape: "square" },
-  { id: "02", name: "Story Synthesizer", role: "Engineering Narrative", bg: "#F0C020", shape: "circle" },
-  { id: "03", name: "Architecture Architect", role: "System & Flow Diagrams", bg: "#FFFFFF", shape: "triangle" },
-  { id: "04", name: "Resume Tailor", role: "Metrics & ATS Optimization", bg: "#D02020", shape: "square", darkText: true },
-  { id: "05", name: "Viva Inquisitor", role: "Adversarial Technical Drill", bg: "#1040C0", shape: "circle", darkText: true },
+  {
+    id: "01",
+    name: "Project DNA Extractor",
+    role: "Summarises repository structure and technologies",
+    bg: "#FFFFFF",
+    shape: "square",
+  },
+  {
+    id: "02",
+    name: "Project Story",
+    role: "Generates a structured project explanation",
+    bg: "#F0C020",
+    shape: "circle",
+  },
+  {
+    id: "03",
+    name: "Architecture Summary",
+    role: "Describes system structure and data flow",
+    bg: "#FFFFFF",
+    shape: "triangle",
+  },
+  {
+    id: "04",
+    name: "Viva Questions",
+    role: "Drafts technical questions and answers",
+    bg: "#D02020",
+    shape: "square",
+  },
+  {
+    id: "05",
+    name: "Resume Points",
+    role: "Drafts project based resume bullets",
+    bg: "#1040C0",
+    shape: "circle",
+  },
+  {
+    id: "06",
+    name: "Improvement Suggestions",
+    role: "Suggests potential project improvements",
+    bg: "#F0C020",
+    shape: "triangle",
+  },
+  {
+    id: "07",
+    name: "Demo Script",
+    role: "Drafts a short project walkthrough",
+    bg: "#FFFFFF",
+    shape: "square",
+  },
 ];
 
 const benefitsList = [
-  "No fabricated experience — 100% extracted from genuine commits",
-  "Tailored for both engineering managers & algorithm screeners",
-  "Covers architecture decisions, failure modes, and database tradeoffs",
-  "Generates defendable answers for 'Why this tech stack?'",
-  "Exportable summaries for quick 15-minute pre-interview review",
-  "Local semantic analysis ensures total code privacy",
+  "Understand your project structure.",
+  "Prepare for technical viva questions.",
+  "Explain your technology choices.",
+  "Identify possible improvements.",
+  "Generate resume points based on your project.",
+  "Practise explaining your work confidently.",
 ];
 
 const faqData = [
   {
     q: "How does PrepAI differ from generic AI chat prompts?",
-    a: "Generic LLMs hallucinate fictional libraries and recite textbook definitions. PrepAI constructs a semantic AST map of your actual repository files, extracting concrete component dependencies, schemas, and routes so every answer is 100% defendable.",
+    a: "PrepAI reads your actual repository files, so you do not have to paste code into a chat. It builds context from the repository file tree and selected source files, then generates a fixed set of outputs in one run: project story, architecture summary, technical viva questions, project-based resume points, improvement suggestions and a demo script. Everything is saved under your project so you can come back to it later. The output is AI-generated, so check it against your code and practise explaining it in your own words.",
   },
   {
     q: "What types of repositories and languages are supported?",
-    a: "PrepAI works with fullstack web apps, microservices, mobile apps, and systems code across JavaScript/TypeScript, Python, Go, Java, C++, Rust, and related modern stacks.",
+    a: "PrepAI analyses repositories accessible through GitHub and reads selected files rather than every file. The local scanner recognises JavaScript, TypeScript, Python, Go, Java, C/C++, C#, PHP, Ruby, HTML, CSS, JSON, Markdown, shell and YAML files. If cloning is unavailable, the GitHub API fallback reads a narrower set, mainly JavaScript/TypeScript, JSON, Markdown, CSS/SCSS and HTML. Coverage depends on the repository and fallback path.",
   },
   {
     q: "Does PrepAI train on or share my private code?",
-    a: "Never. Your code and repositories are parsed in transient sandboxes with strict privacy guarantees. We do not store or expose proprietary repository logic.",
+    a: "PrepAI does not train any model, but the selected repository files are sent to Groq, an external AI provider, to generate the analysis. The generated analysis and the repository URL are saved with your project in the application database, while embeddings are created locally with all-MiniLM-L6-v2. The current GitHub flow works with repositories that do not require private-repository credentials. Do not submit sensitive code unless Groq's current data handling terms meet your needs, as PrepAI cannot promise immediate deletion by Groq.",
   },
   {
-    q: "How does the Placement Kit help in live interviews?",
-    a: "Interviews fail when candidates cannot articulate why they chose a database, how components communicate, or how their app handles failure. PrepAI equips you with the exact technical vocabulary and architectural diagrams to explain your work with confidence.",
+    q: "How does the Placement Kit help me prepare?",
+    a: "The Placement Kit gives you a clear set of materials to review before an interview, so you can check how your project is described and where you need more depth. Compare the generated project explanation, architecture summary, viva questions, resume points and improvement suggestions against your own code, then practise explaining them in your own words. It is meant to sharpen your preparation, not to replace your own understanding.",
   },
 ];
+
+const prepaiSummaryPrompt = `Summarise this product in clear, professional language for students, developers and recruiters:
+
+PrepAI is an AI-powered placement preparation platform for students and developers. It helps users understand the projects they have built and prepare to explain them in technical interviews.
+
+Users connect a GitHub repository URL. PrepAI fetches the repository file tree and selected source files, then builds project context from the files it can read. Its analysis pipeline has seven stages: Project DNA extraction, Project Story generation, Architecture Summary, Viva Questions, Resume Points, Improvement Suggestions and Demo Script generation.
+
+The platform produces project explanations, written architecture and data-flow summaries, technical viva questions with draft answers, project-based resume highlights, improvement suggestions and a short demo script. These are preparation materials, so users should review them against their own source code and practise explaining them in their own words.
+
+PrepAI generates semantic embeddings locally with all-MiniLM-L6-v2 and sends repository context to Groq for AI generation. It is useful for students and developers who want to turn a real project into clear interview preparation material. It does not guarantee interview success, and AI-generated content should be checked for accuracy.
+
+Website: https://prepai.jatinxkumar.xyz`;
 
 // ==========================================
 // REUSABLE GEOMETRIC ATOMS
@@ -202,10 +270,39 @@ function GeometricCornerBadge({ shape = "square", color = "#D02020" }) {
 export default function LandingPage() {
   const { token } = useAuthStore();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [openFaqIndex, setOpenFaqIndex] = useState(0);
+  const [openFaqIndex, setOpenFaqIndex] = useState(-1);
+  const [summaryStatus, setSummaryStatus] = useState("");
+  const statusTimerRef = useRef(null);
+
+  // Message 3 second baad apne aap hat jayega
+  const showStatus = (message) => {
+    setSummaryStatus(message);
+    clearTimeout(statusTimerRef.current);
+    statusTimerRef.current = setTimeout(() => setSummaryStatus(""), 3000);
+  };
+
+  // Component unmount hone par timer clean up
+  useEffect(() => {
+    return () => clearTimeout(statusTimerRef.current);
+  }, []);
 
   const toggleFaq = (index) => {
     setOpenFaqIndex(openFaqIndex === index ? -1 : index);
+  };
+
+  const copySummaryPrompt = async (successMessage = "Prompt copied!") => {
+    try {
+      await navigator.clipboard.writeText(prepaiSummaryPrompt);
+      showStatus(successMessage);
+    } catch {
+      showStatus("Could not copy the prompt. Please try again.");
+    }
+  };
+
+  // Gemini ke liye: pehle copy, phir tab open (Gemini URL se prompt prefill support nahi karta)
+  const openProviderWithCopiedPrompt = (providerName, providerUrl) => {
+    copySummaryPrompt(`Prompt copied — paste it into ${providerName}.`);
+    window.open(providerUrl, "_blank", "noopener,noreferrer");
   };
 
   return (
@@ -237,7 +334,7 @@ export default function LandingPage() {
               href="#architecture"
               className="text-[#121212] hover:text-[#F0C020] transition-colors py-2 border-b-2 border-transparent hover:border-[#F0C020]"
             >
-              AI Agents
+              Analysis Pipeline
             </a>
             <a
               href="#faq"
@@ -263,7 +360,11 @@ export default function LandingPage() {
             className="md:hidden p-2 border-2 border-[#121212] bg-white bauhaus-shadow-sm"
             aria-label="Toggle Menu"
           >
-            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            {mobileMenuOpen ? (
+              <X className="w-6 h-6" />
+            ) : (
+              <Menu className="w-6 h-6" />
+            )}
           </button>
         </div>
 
@@ -295,7 +396,7 @@ export default function LandingPage() {
                 onClick={() => setMobileMenuOpen(false)}
                 className="py-2 border-b border-[#121212]/20"
               >
-                AI Agents
+                Analysis Pipeline
               </a>
               <a
                 href="#faq"
@@ -330,24 +431,25 @@ export default function LandingPage() {
               <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#F0C020] border-2 border-[#121212] bauhaus-shadow-sm mb-6">
                 <span className="w-2.5 h-2.5 bg-[#D02020] rounded-none border border-[#121212]" />
                 <span className="text-xs font-black uppercase tracking-widest text-[#121212]">
-                  Placement Intelligence Platform
+                  Placement Preparation Platform
                 </span>
               </div>
 
               {/* Massive Geometric Headline */}
-              <h1 className="text-5xl sm:text-6xl md:text-7xl xl:text-8xl font-black uppercase tracking-tighter leading-[0.92]">
-                <span className="text-[#121212] block">TURN CODE</span>
+              <h1 className="text-5xl font-black uppercase tracking-tighter leading-[0.92]">
+                <span className="text-[#121212] block">TURN YOUR PROJECTS</span>
                 <span className="inline-block bg-[#D02020] text-white px-3 py-1 my-2 border-2 border-[#121212] shadow-[4px_4px_0px_0px_#121212]">
-                  INTO CAREER
+                  INTO INTERVIEW
                 </span>
-                <span className="text-[#121212] block">OFFERS.</span>
+                <span className="text-[#121212] block">CONFIDENCE.</span>
               </h1>
 
               {/* Functional Subheading */}
               <p className="mt-8 text-lg sm:text-xl font-medium text-[#121212]/80 max-w-xl leading-relaxed">
-                Connect your GitHub repository. PrepAI constructs your complete,
-                defendable interview kit — architectural breakdowns, viva Q&A,
-                and evidence-grounded resume bullets.
+                Connect your GitHub repository and let PrepAI understand your
+                code. Generate project explanations, technical interview
+                questions, architecture insights and resume-ready bullet points
+                based on your repository.
               </p>
             </div>
 
@@ -370,25 +472,8 @@ export default function LandingPage() {
             </div>
 
             {/* Bottom Meta Badges */}
-            <div className="mt-12 pt-8 border-t-2 border-[#121212] grid grid-cols-3 gap-4 text-center">
-              <div>
-                <p className="text-2xl sm:text-3xl font-black text-[#121212]">7</p>
-                <p className="text-xs font-bold uppercase tracking-wider text-[#121212]/70 mt-1">
-                  AI Agents
-                </p>
-              </div>
-              <div className="border-x-2 border-[#121212]">
-                <p className="text-2xl sm:text-3xl font-black text-[#D02020]">100%</p>
-                <p className="text-xs font-bold uppercase tracking-wider text-[#121212]/70 mt-1">
-                  Repo Verified
-                </p>
-              </div>
-              <div>
-                <p className="text-2xl sm:text-3xl font-black text-[#1040C0]">0s</p>
-                <p className="text-xs font-bold uppercase tracking-wider text-[#121212]/70 mt-1">
-                  Fabrication
-                </p>
-              </div>
+            <div className="mt-12 pt-8 border-t-2 border-[#121212] text-sm font-bold uppercase tracking-wider text-[#121212]/70">
+              Project preparation from your repository
             </div>
           </div>
 
@@ -429,26 +514,32 @@ export default function LandingPage() {
                     <span className="w-3 h-3 bg-[#1040C0] border border-[#121212]" />
                   </div>
                   <span className="text-xs font-mono font-bold tracking-widest uppercase">
-                    AST_ANALYZER.SH
+                    PROJECT_SCAN.SH
                   </span>
                 </div>
 
                 <div className="space-y-2 font-mono text-xs">
                   <div className="flex items-center gap-2 text-[#D02020] font-bold">
                     <Terminal className="w-4 h-4" />
-                    <span>$ prepai analyze --repo=github.com/app</span>
+                    <span>Sample analysis preview</span>
                   </div>
                   <div className="p-2 bg-[#F0F0F0] border-2 border-[#121212] text-[11px] leading-tight font-medium">
-                    <p className="text-[#1040C0] font-bold">✓ 34 Source Files Indexed</p>
-                    <p className="text-[#121212]">✓ Architecture: Distributed Event Queue</p>
-                    <p className="text-[#D02020] font-bold">✓ 12 Defendable Viva Questions Ready</p>
+                    <p className="text-[#1040C0] font-bold">
+                      Project structure and files
+                    </p>
+                    <p className="text-[#121212]">
+                      Architecture and technology summary
+                    </p>
+                    <p className="text-[#D02020] font-bold">
+                      Interview questions and resume points
+                    </p>
                   </div>
                 </div>
 
                 <div className="mt-4 pt-3 border-t-2 border-[#121212] flex items-center justify-between text-xs font-bold uppercase">
-                  <span>Confidence Score</span>
+                  <span>Example interface</span>
                   <span className="px-2 py-0.5 bg-[#F0C020] border border-[#121212] font-black">
-                    98.4%
+                    Sample
                   </span>
                 </div>
               </motion.div>
@@ -457,10 +548,10 @@ export default function LandingPage() {
             {/* Poster Caption */}
             <div className="mt-8 text-center relative z-10">
               <p className="text-xs font-mono font-bold uppercase tracking-widest text-[#F0C020]">
-                FORM FOLLOWS FUNCTION • DESSAU 1925
+                FROM REPO TO INTERVIEW
               </p>
               <p className="text-sm font-bold uppercase tracking-wider text-white mt-1">
-                Deterministic Code Verification Architecture
+                Sample repository analysis preview
               </p>
             </div>
           </div>
@@ -472,7 +563,7 @@ export default function LandingPage() {
           ========================================================================= */}
       <section className="bg-[#F0C020] border-b-4 border-[#121212] py-8 sm:py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {statsData.map((stat, i) => (
               <div
                 key={stat.label}
@@ -487,13 +578,19 @@ export default function LandingPage() {
                     style={{
                       backgroundColor: stat.bg,
                       borderRadius: stat.shape === "circle" ? "9999px" : "0px",
-                      transform: stat.shape === "rotated-square" ? "rotate(45deg)" : "none",
+                      transform:
+                        stat.shape === "rotated-square"
+                          ? "rotate(45deg)"
+                          : "none",
                     }}
                   >
                     <span
                       className={stat.textColor}
                       style={{
-                        transform: stat.shape === "rotated-square" ? "rotate(-45deg)" : "none",
+                        transform:
+                          stat.shape === "rotated-square"
+                            ? "rotate(-45deg)"
+                            : "none",
                       }}
                     >
                       ★
@@ -512,20 +609,24 @@ export default function LandingPage() {
       {/* =========================================================================
           4. HOW IT WORKS: 3-Column Geometric Flow
           ========================================================================= */}
-      <section id="how-it-works" className="py-20 sm:py-28 px-4 sm:px-6 lg:px-8 border-b-4 border-[#121212] bg-[#F0F0F0]">
+      <section
+        id="how-it-works"
+        className="py-20 sm:py-28 px-4 sm:px-6 lg:px-8 border-b-4 border-[#121212] bg-[#F0F0F0]"
+      >
         <div className="max-w-7xl mx-auto">
           {/* Section Header */}
           <div className="border-b-4 border-[#121212] pb-6 mb-16 flex flex-col md:flex-row md:items-end justify-between gap-4">
             <div>
               <div className="inline-block px-3 py-1 bg-[#D02020] text-white border-2 border-[#121212] text-xs font-black uppercase tracking-widest mb-3">
-                Workflow Engineering
+                Three Steps
               </div>
               <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black uppercase tracking-tighter text-[#121212]">
                 HOW IT WORKS
               </h2>
             </div>
             <p className="text-base sm:text-lg font-bold uppercase tracking-wider text-[#121212]/70 max-w-md">
-              From raw GitHub repository URL to defensive interview capability in 3 deliberate steps.
+              From a GitHub repository to useful project and interview
+              preparation materials.
             </p>
           </div>
 
@@ -538,7 +639,10 @@ export default function LandingPage() {
               >
                 {/* Geometric corner indicator */}
                 <div className="absolute top-4 right-4">
-                  <GeometricCornerBadge shape={step.shape} color={step.accent} />
+                  <GeometricCornerBadge
+                    shape={step.shape}
+                    color={step.accent}
+                  />
                 </div>
 
                 <div>
@@ -576,20 +680,24 @@ export default function LandingPage() {
       {/* =========================================================================
           5. FEATURES SECTION: Grid of Geometric Functional Units
           ========================================================================= */}
-      <section id="features" className="py-20 sm:py-28 px-4 sm:px-6 lg:px-8 border-b-4 border-[#121212] bg-[#FFFFFF]">
+      <section
+        id="features"
+        className="py-20 sm:py-28 px-4 sm:px-6 lg:px-8 border-b-4 border-[#121212] bg-[#FFFFFF]"
+      >
         <div className="max-w-7xl mx-auto">
           {/* Section Header */}
           <div className="border-b-4 border-[#121212] pb-6 mb-16 flex flex-col md:flex-row md:items-end justify-between gap-4">
             <div>
               <div className="inline-block px-3 py-1 bg-[#1040C0] text-white border-2 border-[#121212] text-xs font-black uppercase tracking-widest mb-3">
-                Functional Capabilities
+                Project Tools
               </div>
               <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black uppercase tracking-tighter text-[#121212]">
                 CORE FEATURES
               </h2>
             </div>
             <p className="text-base sm:text-lg font-bold uppercase tracking-wider text-[#121212]/70 max-w-md">
-              Constructed to make your technical presentation articulate, verified, and impossible to poke holes in.
+              Tools to help you understand your project and prepare to discuss
+              it.
             </p>
           </div>
 
@@ -604,7 +712,10 @@ export default function LandingPage() {
                 >
                   {/* Decorative shape top right */}
                   <div className="absolute top-4 right-4">
-                    <GeometricCornerBadge shape={feat.shape} color={feat.cornerColor} />
+                    <GeometricCornerBadge
+                      shape={feat.shape}
+                      color={feat.cornerColor}
+                    />
                   </div>
 
                   <div>
@@ -627,7 +738,6 @@ export default function LandingPage() {
                   </div>
 
                   <div className="mt-8 pt-4 border-t-2 border-[#121212] flex items-center justify-between text-xs font-bold uppercase">
-                    <span className="text-[#121212]">Autonomous Capability</span>
                     <span
                       className="w-3 h-3 border border-[#121212]"
                       style={{ backgroundColor: feat.cornerColor }}
@@ -643,31 +753,37 @@ export default function LandingPage() {
       {/* =========================================================================
           6. AI AGENTS GRAPH: Deep Bauhaus Blue Color Blocking
           ========================================================================= */}
-      <section id="architecture" className="py-20 sm:py-28 px-4 sm:px-6 lg:px-8 border-b-4 border-[#121212] bg-[#1040C0] text-white">
+      <section
+        id="architecture"
+        className="py-20 sm:py-28 px-4 sm:px-6 lg:px-8 border-b-4 border-[#121212] bg-[#1040C0] text-white"
+      >
         <div className="max-w-7xl mx-auto">
           <div className="border-b-4 border-[#121212] pb-6 mb-16 flex flex-col md:flex-row md:items-end justify-between gap-4">
             <div>
               <div className="inline-block px-3 py-1 bg-[#F0C020] text-[#121212] border-2 border-[#121212] text-xs font-black uppercase tracking-widest mb-3">
-                Agent Architecture
+                Analysis Pipeline
               </div>
               <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black uppercase tracking-tighter text-white">
-                THE REASONING CHAIN
+                HOW ANALYSIS WORKS
               </h2>
             </div>
             <p className="text-base sm:text-lg font-bold uppercase tracking-wider text-white/90 max-w-md">
-              A sequential pipeline of 5 specialized agents that inspect, dissect, and synthesize your codebase.
+              The analysis pipeline runs seven steps to summarise a repository
+              and prepare project materials.
             </p>
           </div>
 
           {/* Sequential Agent Graph Strip */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {agentGraph.map((agent, index) => (
               <div
                 key={agent.name}
                 className="bg-white text-[#121212] border-4 border-[#121212] bauhaus-shadow p-6 flex flex-col justify-between relative hover:-translate-y-1 transition-transform"
               >
                 <div className="flex items-center justify-between border-b-2 border-[#121212] pb-3 mb-4">
-                  <span className="text-2xl font-black font-mono">#{agent.id}</span>
+                  <span className="text-2xl font-black font-mono">
+                    #{agent.id}
+                  </span>
                   <GeometricCornerBadge
                     shape={agent.shape}
                     color={agent.bg === "#FFFFFF" ? "#D02020" : agent.bg}
@@ -685,7 +801,6 @@ export default function LandingPage() {
 
                 <div className="mt-6 pt-3 border-t-2 border-[#121212] flex items-center justify-between text-[11px] font-black uppercase text-[#1040C0]">
                   <span>Step {index + 1}</span>
-                  <span>Active</span>
                 </div>
               </div>
             ))}
@@ -695,13 +810,16 @@ export default function LandingPage() {
           <div className="mt-12 bg-white text-[#121212] border-4 border-[#121212] bauhaus-shadow-lg p-8 sm:p-10 flex flex-col lg:flex-row items-center justify-between gap-8">
             <div className="max-w-2xl">
               <span className="inline-block px-3 py-1 bg-[#D02020] text-white border-2 border-[#121212] text-xs font-black uppercase tracking-widest mb-3">
-                Zero Blackbox
+                How analysis works
               </span>
               <h3 className="text-2xl sm:text-3xl font-black uppercase tracking-tight mb-2">
-                Every interview claim backed by source code line references.
+                AI-generated materials based on repository context.
               </h3>
               <p className="text-base font-medium text-[#121212]/80 leading-relaxed">
-                If an agent generates a resume bullet or a viva response, it links directly to the concrete controller, route, schema, or algorithm in your GitHub repository.
+                PrepAI reads selected repository files and project structure,
+                then sends repository context to Groq to generate analysis.
+                Review generated details against your source code before using
+                them.
               </p>
             </div>
 
@@ -710,7 +828,7 @@ export default function LandingPage() {
                 to={token ? "/dashboard" : "/auth"}
                 className="bauhaus-btn-press inline-flex items-center gap-3 px-8 py-4 bg-[#F0C020] text-[#121212] text-sm font-black uppercase tracking-wider border-4 border-[#121212] bauhaus-shadow hover:bg-[#F0C020]/90"
               >
-                <span>Analyze Your Repo</span>
+                <span>Analyse Your Repo</span>
                 <ArrowRight className="w-5 h-5" />
               </Link>
             </div>
@@ -727,13 +845,14 @@ export default function LandingPage() {
             {/* Left Narrative */}
             <div className="lg:col-span-5">
               <div className="inline-block px-3 py-1 bg-[#F0C020] text-[#121212] border-2 border-[#121212] text-xs font-black uppercase tracking-widest mb-4">
-                Placement Defense
+                Project Preparation
               </div>
               <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black uppercase tracking-tighter leading-none text-white">
-                WHY IT MATTERS IN THE ROOM.
+                BE READY TO EXPLAIN YOUR PROJECT.
               </h2>
               <p className="mt-6 text-lg font-medium text-white/90 leading-relaxed">
-                Technical interviewers can smell shallow project familiarity within 90 seconds. PrepAI equips you with rigorous, architectural clarity so you own your code.
+                Build a clearer understanding of your work and prepare to
+                discuss it in technical interviews.
               </p>
 
               <div className="mt-8">
@@ -750,7 +869,7 @@ export default function LandingPage() {
             {/* Right Checklist Grid */}
             <div className="lg:col-span-7 bg-white text-[#121212] border-4 border-[#121212] bauhaus-shadow-lg p-6 sm:p-10">
               <h3 className="text-xl sm:text-2xl font-black uppercase tracking-tight border-b-2 border-[#121212] pb-4 mb-6">
-                Verified Candidate Standards
+                Ways PrepAI Can Help
               </h3>
 
               <div className="space-y-4">
@@ -776,18 +895,22 @@ export default function LandingPage() {
       {/* =========================================================================
           8. FAQ SECTION: Bauhaus Accordion (Red Open / Yellow Content)
           ========================================================================= */}
-      <section id="faq" className="py-20 sm:py-28 px-4 sm:px-6 lg:px-8 border-b-4 border-[#121212] bg-[#F0F0F0]">
+      <section
+        id="faq"
+        className="py-20 sm:py-28 px-4 sm:px-6 lg:px-8 border-b-4 border-[#121212] bg-[#F0F0F0]"
+      >
         <div className="max-w-4xl mx-auto">
           {/* Section Header */}
           <div className="text-center mb-16">
             <div className="inline-block px-3 py-1 bg-[#1040C0] text-white border-2 border-[#121212] text-xs font-black uppercase tracking-widest mb-3">
-              Clear Answers
+              FAQ
             </div>
             <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black uppercase tracking-tighter text-[#121212]">
               FREQUENTLY ASKED QUESTIONS
             </h2>
             <p className="mt-4 text-base sm:text-lg font-bold uppercase tracking-wider text-[#121212]/70">
-              Strictly honest answers about privacy, accuracy, and output.
+              Answers about how PrepAI works, what it analyses and how data is
+              processed.
             </p>
           </div>
 
@@ -804,7 +927,9 @@ export default function LandingPage() {
                   <button
                     onClick={() => toggleFaq(index)}
                     className={`w-full p-6 text-left flex items-center justify-between transition-colors ${
-                      isOpen ? "bg-[#D02020] text-white" : "bg-white text-[#121212] hover:bg-gray-50"
+                      isOpen
+                        ? "bg-[#D02020] text-white"
+                        : "bg-white text-[#121212] hover:bg-gray-50"
                     }`}
                   >
                     <span className="text-lg sm:text-xl font-black uppercase tracking-tight pr-4">
@@ -812,7 +937,9 @@ export default function LandingPage() {
                     </span>
                     <div
                       className={`w-8 h-8 border-2 border-[#121212] flex items-center justify-center shrink-0 transition-transform ${
-                        isOpen ? "rotate-180 bg-[#F0C020] text-[#121212]" : "bg-white text-[#121212]"
+                        isOpen
+                          ? "rotate-180 bg-[#F0C020] text-[#121212]"
+                          : "bg-white text-[#121212]"
                       }`}
                     >
                       <ChevronDown className="w-5 h-5 stroke-[3]" />
@@ -845,7 +972,10 @@ export default function LandingPage() {
       {/* =========================================================================
           9. FINAL CALL TO ACTION: Massive Yellow Panel with Decorative Shapes
           ========================================================================= */}
-      <section className="relative py-20 sm:py-28 px-4 sm:px-6 lg:px-8 border-b-4 border-[#121212] bg-[#F0C020] overflow-hidden">
+      <section
+        className="relative py-20 sm:py-28 px-4 sm:px-6 lg:px-8 border-b-4 border-[#121212] bg-[#F0C020] overflow-hidden"
+        style={{ clipPath: "inset(0)" }}
+      >
         {/* Large Decorative Overlapping Corner Shapes */}
         <div className="absolute -top-20 -left-20 w-64 h-64 rounded-full bg-[#1040C0] opacity-40 border-4 border-[#121212] pointer-events-none" />
         <div className="absolute -bottom-20 -right-20 w-72 h-72 rotate-45 bg-[#D02020] opacity-40 border-4 border-[#121212] pointer-events-none" />
@@ -856,13 +986,16 @@ export default function LandingPage() {
           </div>
 
           <h2 className="text-5xl sm:text-6xl md:text-7xl font-black uppercase tracking-tighter text-[#121212] leading-[0.92]">
-            STOP GUESSING. <br />
-            START DEFENDING YOUR CODE.
+            UNDERSTAND YOUR PROJECT. <br />
+            PREPARE TO EXPLAIN IT.
           </h2>
 
-          <p className="mt-8 text-lg sm:text-xl font-bold uppercase tracking-wider text-[#121212]/80 max-w-2xl mx-auto leading-relaxed">
-            Upload your GitHub repository and walk into your next interview backed by full architectural proof.
-          </p>
+          <div className="mt-8 w-full flex justify-center px-4">
+            <p className="w-full max-w-3xl text-center text-lg sm:text-xl font-bold uppercase tracking-wider text-[#121212]/80 leading-relaxed">
+              Connect a GitHub repository to generate project explanations,
+              interview questions and resume points.
+            </p>
+          </div>
 
           <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-5">
             <Link
@@ -884,7 +1017,119 @@ export default function LandingPage() {
       </section>
 
       {/* =========================================================================
-          10. FOOTER: Constructivist Stark Black Grounding
+          10. AI SUMMARY: Share PrepAI With Your Preferred Assistant
+          ========================================================================= */}
+      <section className="px-4 sm:px-6 lg:px-8 py-10 sm:py-14 bg-[#F0F0F0]">
+        <div className="max-w-7xl mx-auto">
+          <div className="rounded-[2rem] bg-[#121212] border-2 border-[#121212]/70 shadow-[6px_6px_0_#D02020] px-6 py-6 sm:px-8 sm:py-7 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+            <div className="flex items-center gap-3 text-white">
+              <div className="w-11 h-11 shrink-0 rounded-full bg-[#F0C020] border-2 border-white/20 flex items-center justify-center">
+                <Sparkles
+                  className="w-5 h-5 text-[#121212]"
+                  aria-hidden="true"
+                />
+              </div>
+              <div>
+                <h2
+                  className="text-xl sm:text-2xl font-black tracking-tight"
+                  style={{ color: "#FFFFFF" }}
+                >
+                  Summarise with AI
+                </h2>
+                <p className="mt-1 text-sm text-white/65">
+                  Open an assistant with the PrepAI summary prompt already filled in, or copy it.
+                  first.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-3 sm:gap-4 md:justify-end">
+              {/* ChatGPT: prompt URL se prefill hota hai */}
+              <a
+                href={`https://chatgpt.com/?q=${encodeURIComponent(prepaiSummaryPrompt)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                title="Open the PrepAI summary prompt in ChatGPT"
+                aria-label="Open the PrepAI summary prompt in ChatGPT"
+                className="group w-12 h-12 rounded-full border-2 border-white/25 bg-white/5 hover:bg-[#F0C020] hover:border-[#F0C020] flex items-center justify-center transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F0C020] focus-visible:ring-offset-2 focus-visible:ring-offset-[#121212]"
+              >
+                <img
+                  src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAAsTAAALEwEAmpwYAAADe0lEQVR4nNWXW4jOURTFP0bJkEa8SCGMyCWUy7g1JuFNwgPJk5LiyYMZkUQ0rhkZCZNrNG7PZrxr8ODJZRByKVIyg3GdnzbrsB3n/32hKdbb/6xzzl7f2fuss79c7n8BMBU4DTwG3gH3gRPA5I4O3AWoJRvtwG6gc0cJqFWgN8B6YDDQFRgCbATaxO8EFgIXgDvAA+ASsAro8TfHHoJPyjPHUpIPD7PW5wVwShusz+AHAedcoHvAcmAY0B+YDzSJawVG5o8YQQVnGByN9wC2uOO3zSstNYk9ioCTmnclVwhAZ2AWUAV80sIix88EnroCPAL0LbBnsVtTlm/iDKA5TqDjxwLvNXwZmOC4PsACYAkwILH3Lq2rzAq+CPioSSaiOiGgXkP7gU7umlYpDQGfgeNAP7d2pbi9qeClwGtN2BjudELAbQ0N1fdo4JpLx0XgjKsN23Md0A3YrLENKQF1Io9G47GAkJ4RtpFLx1tgtps3UEIC7ssXDDPj4J2AFxnVHgu4qqEncZ1I3NKoYMuB626OFXVpLKC3yBeJk4kFmLMFmNtVKGhzlhBdQ/OG5+Jf/WRKQEkgEgJaxJXo+6y+rcCK3bwil8YAq5dpUZxQxCamtw/0SMS4SECDxvep2g/re1lC7GpxTe5EzKInRkIbxW3zi7dr8GKUw4nO55udra5OCFgm7pDE7gt7RvPGa/xhXAchR/XhyMVNc9cvoC4SWqy0GM5GqW1JFH3wjJ6eKFOBhBwtjwopq9gqVJABjW7Pr0ic1ktfW99hBuP8H12hcsenhBBdzav5BCiG4VlwU0/OEflA5hFgpjLQzZst80FmtEHm9PVkCgg4puGDPwUXucnZcTfZaLDoNl3DBtkusuHRWms9gOFWSoBOL9hx6y+GFLVfK9xYPxWYPTABLXqAurjCOiDulFsbUO3S9sFat1wKwFpN2pHgBgCLgXlALzc+QU8zurJjEgICbgLTk8ENwBRNfOqdLgVrQtSMtLs1FY63I0dFvUa3pXDnzI8H54S/647vqvar1f3qrXHnqyfe8KhgUA9glNu8SV2OteLDrTbUeAact8Y0Yx8rZMPJ3O8CmKRWOh/sl0/Jk8o2pefP/jkB3dVG2ftwF7ihazgX2CMRbfqlpRl/Vmr+KHghqMBqXAGmUBOuaYeBb/+KrOc317SU2LNu39mt97+GL2fjt/smHdlcAAAAAElFTkSuQmCC"
+                  alt="chatgpt--v2"
+                ></img>
+                <span className="sr-only">ChatGPT</span>
+              </a>
+
+              {/* Claude: ChatGPT ki tarah URL se prompt prefill hota hai */}
+              <a
+                href={`https://claude.ai/new?q=${encodeURIComponent(prepaiSummaryPrompt)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                title="Open the PrepAI summary prompt in Claude"
+                aria-label="Open the PrepAI summary prompt in Claude"
+                className="group w-12 h-12 rounded-full border-2 border-white/25 bg-white/5 hover:bg-[#D02020] hover:border-[#D02020] flex items-center justify-center transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F0C020] focus-visible:ring-offset-2 focus-visible:ring-offset-[#121212]"
+              >
+                <img
+                  width="48"
+                  height="48"
+                  src="https://img.icons8.com/sf-regular-filled/48/FFFFFF/claude-ai.png"
+                  alt="claude-ai"
+                />
+                <span className="sr-only">Claude</span>
+              </a>
+
+              {/* Gemini: URL prefill support nahi karta, isliye copy + open */}
+              <a
+                href={`https://www.google.com/search?udm=50&q=${encodeURIComponent(prepaiSummaryPrompt)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                title="Open the PrepAI summary prompt in Google AI Mode"
+                aria-label="Open the PrepAI summary prompt in Google AI Mode"
+                className="group w-12 h-12 rounded-full border-2 border-white/25 bg-white/5 hover:bg-[#1040C0] hover:border-[#1040C0] flex items-center justify-center transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F0C020] focus-visible:ring-offset-2 focus-visible:ring-offset-[#121212]"
+              >
+                <img
+                  width="30"
+                  height="30"
+                  src="https://img.icons8.com/ios-glyphs/30/FFFFFF/gemini-ai.png"
+                  alt="gemini-ai"
+                />
+                <span className="sr-only">Gemini</span>
+              </a>
+
+              <div
+                className="w-px h-8 bg-white/25 mx-1 hidden sm:block"
+                aria-hidden="true"
+              />
+
+              <button
+                type="button"
+                onClick={() => copySummaryPrompt()}
+                title="Copy the PrepAI summary prompt"
+                aria-label="Copy the PrepAI summary prompt"
+                className="w-12 h-12 rounded-full border-2 border-white/25 bg-white/5 hover:bg-white hover:border-white flex items-center justify-center transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F0C020] focus-visible:ring-offset-2 focus-visible:ring-offset-[#121212]"
+              >
+                {summaryStatus.startsWith("Prompt copied") ? (
+                  <CheckCircle2
+                    className="w-5 h-5 text-[#F0C020]"
+                    aria-hidden="true"
+                  />
+                ) : (
+                  <Copy className="w-5 h-5 text-white" aria-hidden="true" />
+                )}
+              </button>
+            </div>
+          </div>
+          <p
+            className="min-h-5 mt-4 text-center text-sm font-bold text-[#121212]/70"
+            aria-live="polite"
+          >
+            {summaryStatus}
+          </p>
+        </div>
+      </section>
+
+      {/* =========================================================================
+          11. FOOTER: Constructivist Stark Black Grounding
           ========================================================================= */}
       <footer className="bg-[#121212] text-white py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
@@ -899,29 +1144,39 @@ export default function LandingPage() {
               </div>
 
               <p className="mt-4 text-sm font-medium text-white/70 max-w-sm leading-relaxed">
-                Autonomous placement kit generation platform built on local semantic embeddings and AST code analysis.
+                PrepAI helps developers understand their projects and prepare
+                for technical interviews using repository-based analysis and AI.
               </p>
             </div>
 
             {/* Links Columns */}
             <div className="md:col-span-3">
               <h4 className="text-sm font-black uppercase tracking-widest text-[#F0C020] mb-4">
-                Architecture
+                Explore
               </h4>
               <ul className="space-y-2.5 text-sm font-bold uppercase tracking-wider text-white/70">
                 <li>
-                  <a href="#how-it-works" className="hover:text-white transition-colors">
+                  <a
+                    href="#how-it-works"
+                    className="hover:text-white transition-colors"
+                  >
                     How It Works
                   </a>
                 </li>
                 <li>
-                  <a href="#features" className="hover:text-white transition-colors">
-                    Agent Network
+                  <a
+                    href="#features"
+                    className="hover:text-white transition-colors"
+                  >
+                    Features
                   </a>
                 </li>
                 <li>
-                  <a href="#architecture" className="hover:text-white transition-colors">
-                    Semantic Retrieval
+                  <a
+                    href="#architecture"
+                    className="hover:text-white transition-colors"
+                  >
+                    Analysis Pipeline
                   </a>
                 </li>
                 <li>
@@ -933,30 +1188,83 @@ export default function LandingPage() {
             </div>
 
             <div className="md:col-span-4">
-              <h4 className="text-sm font-black uppercase tracking-widest text-[#D02020] mb-4">
-                System Status
-              </h4>
-              <div className="p-4 bg-white/5 border-2 border-white/20 text-xs font-mono">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-white/60">Semantic Model:</span>
-                  <span className="text-[#F0C020] font-bold">all-MiniLM-L6-v2</span>
-                </div>
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-white/60">Execution:</span>
-                  <span className="text-green-400 font-bold">Local ONNX</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-white/60">Code Security:</span>
-                  <span className="text-cyan-300 font-bold">Zero-Retention</span>
-                </div>
+              <h6
+                className="w-full text-center text-2xl sm:text-3xl font-black uppercase tracking-[0.4em] text-white mb-12"
+                style={{ color: "#FFFFFF" }}
+              >
+                Connect
+              </h6>
+              <div className="w-full flex flex-wrap items-center justify-center gap-5 sm:gap-6">
+                <a
+                  href="https://x.com/"
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label="X: jatinxkumar"
+                  className="group inline-flex items-center justify-center p-2 text-white/60 hover:text-white transition-colors"
+                >
+                  <svg
+                    viewBox="0 0 19 19"
+                    className="w-9 h-9 brightness-0 invert opacity-60 group-hover:opacity-100"
+                    aria-hidden="true"
+                  >
+                    <use href="/icons.svg#x-icon" />
+                  </svg>
+                </a>
+                <a
+                  href="https://github.com/jatinxkumar"
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label="GitHub: jatinxkumar"
+                  className="group inline-flex items-center justify-center p-2 text-white/60 hover:text-white transition-colors"
+                >
+                  <svg
+                    viewBox="0 0 19 19"
+                    className="w-9 h-9 brightness-0 invert opacity-60 group-hover:opacity-100"
+                    aria-hidden="true"
+                  >
+                    <use href="/icons.svg#github-icon" />
+                  </svg>
+                </a>
+                <a
+                  href="https://www.linkedin.com/in/jatinxkumar"
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label="LinkedIn: jatinxkumar"
+                  className="group inline-flex items-center justify-center p-2 text-white/60 hover:text-white transition-colors"
+                >
+                  <svg
+                    viewBox="0 0 24 24"
+                    className="w-9 h-9 fill-current"
+                    aria-hidden="true"
+                  >
+                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.35V9h3.414v1.561h.049c.476-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 1 1 .002-4.124 2.062 2.062 0 0 1-.002 4.124zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+                  </svg>
+                </a>
+                <a
+                  href="https://www.instagram.com/___.jatinkumar.___/"
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label="Instagram: ___.jatinkumar.___"
+                  className="group inline-flex items-center justify-center p-2 text-white/60 hover:text-white transition-colors"
+                >
+                  <svg
+                    viewBox="0 0 24 24"
+                    className="w-9 h-9 fill-current"
+                    aria-hidden="true"
+                  >
+                    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.051.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z" />
+                  </svg>
+                </a>
               </div>
             </div>
           </div>
 
           {/* Copyright Row */}
           <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-bold uppercase tracking-wider text-white/60">
-            <p>© {new Date().getFullYear()} PrepAI. Form Follows Function.</p>
-            <p className="font-mono text-[11px]">Constructed with Pure Bauhaus Modernism</p>
+            <p>© {new Date().getFullYear()} PrepAI. All rights reserved.</p>
+            <p className="font-mono text-[11px]">
+              Your Code. Your Interview. Your Success.
+            </p>
           </div>
         </div>
       </footer>

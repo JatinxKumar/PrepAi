@@ -20,8 +20,8 @@ const READ_PATTERNS = [
 
 const CODE_EXTENSIONS = /\.(js|jsx|ts|tsx|py|go|java|cs|cpp|c|h|php|rb|html|css|json|md|sh|yaml|yml)$/i;
 const MAX_FILES_TO_READ = 28;
-const MAX_FILE_CHARS = 5500;
-const MAX_TOTAL_CHARS = 45000;
+const MAX_FILE_CHARS = 3000;
+const MAX_TOTAL_CHARS = 15000;
 
 class GitHubService {
   static getRepoParts(repoUrl) {
@@ -138,7 +138,7 @@ class GitHubService {
           const lowerRelativePath = relativePath.toLowerCase();
 
           // Check ignore patterns
-          const shouldIgnore = IGNORE_PATTERNS.some(p => 
+          const shouldIgnore = IGNORE_PATTERNS.some(p =>
             lowerRelativePath.split('/').includes(p) || lowerRelativePath.endsWith(p)
           );
           if (shouldIgnore) continue;
@@ -161,7 +161,7 @@ class GitHubService {
             }
 
             const lines = fileContent.split('\n').length;
-            
+
             if (CODE_EXTENSIONS.test(relativePath)) {
               linesOfCode += lines;
             }
@@ -170,8 +170,8 @@ class GitHubService {
             if (lowerRelativePath.includes('components/')) {
               componentsCount++;
             } else if (
-              lowerRelativePath.includes('routes/') || 
-              lowerRelativePath.includes('pages/') || 
+              lowerRelativePath.includes('routes/') ||
+              lowerRelativePath.includes('pages/') ||
               lowerRelativePath.includes('api/') ||
               /route\.(js|ts)$/.test(lowerRelativePath)
             ) {
@@ -179,8 +179,8 @@ class GitHubService {
             } else if (lowerRelativePath.includes('models/') || lowerRelativePath.includes('schemas/')) {
               modelsCount++;
             } else if (
-              lowerRelativePath.includes('services/') || 
-              lowerRelativePath.includes('controllers/') || 
+              lowerRelativePath.includes('services/') ||
+              lowerRelativePath.includes('controllers/') ||
               lowerRelativePath.includes('utils/') ||
               lowerRelativePath.includes('middleware/')
             ) {
@@ -188,8 +188,8 @@ class GitHubService {
             }
 
             // Only add to files list if it matches the "Read" patterns
-            const shouldRead = READ_PATTERNS.some(p => 
-              lowerRelativePath.split('/').includes(p) || 
+            const shouldRead = READ_PATTERNS.some(p =>
+              lowerRelativePath.split('/').includes(p) ||
               lowerRelativePath.includes(`/${p}/`) ||
               lowerRelativePath.startsWith(`${p}/`) ||
               lowerRelativePath === p
@@ -259,7 +259,7 @@ class GitHubService {
         `Files read: ${sourceFiles.map((file) => file.path).join(', ')}`,
         '',
         'Repository structure:',
-        structure.slice(0, 180).join('\n'), // Cap structure length for context
+        structure.slice(0, 50).join('\n'), // Cap structure length for context
         '',
         'Important file contents:',
         sourceFiles.map((file) => `--- ${file.path} ---\n${file.content}`).join('\n\n'),
@@ -310,7 +310,7 @@ class GitHubService {
                 } else {
                   try {
                     fs.chmodSync(curPath, 0o666);
-                  } catch (e) {}
+                  } catch (e) { }
                   fs.unlinkSync(curPath);
                 }
               });
@@ -353,7 +353,7 @@ class GitHubService {
 
       const structure = tree
         .filter((item) => !SKIP_PATH_REGEX.test(item.path))
-        .slice(0, 180)
+        .slice(0, 50)
         .map((item) => `${item.type === 'tree' ? 'dir ' : 'file'} ${item.path}`);
 
       // Estimate metric counts from structural tree

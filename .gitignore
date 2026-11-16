@@ -29,3 +29,7 @@ server/uploads/*
 Thumbs.db
 .vscode/
 .idea/
+
+# Test output and temp test files
+*.txt
+*.pdf

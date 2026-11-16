@@ -118,7 +118,7 @@ export default function AuthPage() {
           </div>
 
           <h1 className="text-4xl xl:text-5xl font-black uppercase tracking-tight text-white font-['Outfit'] leading-tight mb-5">
-            Welcome back to <span className="text-[#F0C020]">PrepAI</span>.
+            Your Placement <span className="text-[#F0C020]">Cockpit</span>.
           </h1>
 
           <p className="text-gray-300 text-sm xl:text-base leading-relaxed font-sans mb-8">
@@ -206,7 +206,7 @@ export default function AuthPage() {
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
-          className="w-full max-w-md bg-white border-[3px] border-[#111111] shadow-[6px_6px_0_#111111] p-6 sm:p-8 relative"
+          className="w-full max-w-md mt-16 lg:mt-0 bg-white border-[3px] border-[#111111] shadow-[6px_6px_0_#111111] p-6 sm:p-8 relative"
         >
           {/* Header Title */}
           <div className="mb-6">
@@ -218,7 +218,7 @@ export default function AuthPage() {
             </h2>
             <p className="text-xs text-[#555555] font-sans mt-1">
               {isLogin
-                ? "Enter your credentials to enter your placement cockpit."
+                ? "Enter your credentials to access your placement cockpit"
                 : "Set up your workspace to inspect repositories and viva kits."}
             </p>
           </div>

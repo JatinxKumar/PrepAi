@@ -21,6 +21,7 @@ import PremiumProgressBar from "./PremiumProgressBar";
 import PremiumUploadArea from "./PremiumUploadArea";
 
 import { API_URL } from "../config/api";
+import ConfirmationModal from "../components/ConfirmationModal";
 
 export default function PremiumResumeSection({ token, onResumeChanged }) {
   const [resumes, setResumes] = useState([]);
@@ -34,6 +35,8 @@ export default function PremiumResumeSection({ token, onResumeChanged }) {
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
   const [subTab, setSubTab] = useState("vault");
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [pendingDeleteResumeId, setPendingDeleteResumeId] = useState(null);
   const [bulletInput, setBulletInput] = useState("");
   const [optimizedResult, setOptimizedResult] = useState("");
   const [isOptimizing, setIsOptimizing] = useState(false);
@@ -255,13 +258,18 @@ export default function PremiumResumeSection({ token, onResumeChanged }) {
     }
   };
 
-  const handleDeleteResume = async (resumeId) => {
+  const handleDeleteResume = (resumeId) => {
     if (!resumeId) return;
+    setPendingDeleteResumeId(resumeId);
+    setShowDeleteModal(true);
+  };
 
-    const shouldDelete = window.confirm(
-      "Delete this resume from your vault? This cannot be undone.",
-    );
-    if (!shouldDelete) return;
+  const confirmDeleteResume = async () => {
+    const resumeId = pendingDeleteResumeId;
+    setPendingDeleteResumeId(null);
+    setShowDeleteModal(false);
+
+    if (!resumeId) return;
 
     try {
       await axios.delete(`${API_URL}/resume/${resumeId}`, {
@@ -477,21 +485,23 @@ export default function PremiumResumeSection({ token, onResumeChanged }) {
 
           {/* Tab Navigation (only shows vault here when no resume to avoid confusion, optimizer is still available below) */}
           <div className="flex gap-3 border-b border-white/10 pb-4 overflow-x-auto">
-            {[{ id: "vault", label: "Resume Vault", icon: History }].map(({ id, label, icon: Icon }) => (
-              <motion.button
-                key={id}
-                onClick={() => setSubTab(id)}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className={`px-6 py-3 rounded-xl font-semibold text-sm flex items-center gap-2 whitespace-nowrap transition-all border ${subTab === id
+            {[{ id: "vault", label: "Resume Vault", icon: History }].map(
+              ({ id, label, icon: Icon }) => (
+                <motion.button
+                  key={id}
+                  onClick={() => setSubTab(id)}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className={`px-6 py-3 rounded-xl font-semibold text-sm flex items-center gap-2 whitespace-nowrap transition-all border ${subTab === id
                     ? "bg-gradient-to-r from-purple-500/20 to-cyan-500/20 border-cyan-300/30 text-cyan-300 shadow-lg shadow-cyan-500/10"
                     : "border-white/10 text-gray-400 hover:text-white hover:border-white/20"
-                  }`}
-              >
-                <Icon className="w-4 h-4" />
-                {label}
-              </motion.button>
-            ))}
+                    }`}
+                >
+                  <Icon className="w-4 h-4" />
+                  {label}
+                </motion.button>
+              ),
+            )}
           </div>
 
           <RestumeVaultView
@@ -535,6 +545,17 @@ export default function PremiumResumeSection({ token, onResumeChanged }) {
     </div>
   );
 }
+
+<ConfirmationModal
+  isOpen={showDeleteModal}
+  onClose={() => setShowDeleteModal(false)}
+  onConfirm={() => confirmDeleteResume()}
+  title="Delete Resume"
+  message="Are you sure you want to delete this resume? This action cannot be undone."
+  confirmText="Delete"
+  cancelText="Cancel"
+  variant="danger"
+/>
 
 function ResumeDashboard({
   selectedResume,
@@ -649,8 +670,8 @@ function ResumeDashboard({
                       transition={{ delay: idx * 0.05 }}
                       onClick={() => setSelectedResumeId(resume._id)}
                       className={`w-full text-left p-3 rounded-lg border transition-all flex items-center justify-between cursor-pointer ${selectedResumeId === resume._id
-                          ? "bg-cyan-300/10 border-cyan-300/40"
-                          : "bg-white/5 border-white/5 hover:border-cyan-300/20 hover:bg-white/[0.08]"
+                        ? "bg-cyan-300/10 border-cyan-300/40"
+                        : "bg-white/5 border-white/5 hover:border-cyan-300/20 hover:bg-white/[0.08]"
                         }`}
                     >
                       <div className="min-w-0">

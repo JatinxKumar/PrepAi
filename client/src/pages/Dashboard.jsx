@@ -37,12 +37,14 @@ import {
   Plus,
   ArrowUpRight,
   Edit3,
+  Star,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import AIResumeTailor from "../components/AIResumeTailor";
 import SideRays from "../components/SideRays";
 import useAuthStore from "../store/authStore";
+import ConfirmationModal from "../components/ConfirmationModal";
 import { API_URL } from "../config/api";
 
 
@@ -84,6 +86,7 @@ export default function Dashboard({ initialTab = "overview" }) {
   const [projectPendingDelete, setProjectPendingDelete] = useState(null);
   const [resumeVersion, setResumeVersion] = useState(0);
   const [profileModalOpen, setProfileModalOpen] = useState(false);
+  const [showLogoutConfirmation, setShowLogoutConfirmation] = useState(false);
   const { user, token, logout, updateUser } = useAuthStore();
   const navigate = useNavigate();
 
@@ -228,12 +231,13 @@ export default function Dashboard({ initialTab = "overview" }) {
     await handleDeleteHistoryItem(projectId);
   };
 
-  const handleLogout = () => {
-    const shouldLogout = window.confirm("Are you sure you want to logout?");
-    if (!shouldLogout) return;
+  const requestLogoutConfirmation = () => {
+    setShowLogoutConfirmation(true);
+  };
 
+  const performLogout = () => {
     logout();
-    navigate("/");
+    navigate("/"); // Redirect to home/login page after logout
   };
 
   const handleDownloadPDF = () => {
@@ -336,8 +340,8 @@ export default function Dashboard({ initialTab = "overview" }) {
                 key={tab.id}
                 onClick={() => handleTabClick(tab)}
                 className={`w-full flex items-center gap-3 px-3.5 py-3 text-xs font-bold uppercase tracking-wider transition-all duration-100 ${isActive
-                    ? "bg-[#F0C020] text-[#111111]"
-                    : "text-[#111111] hover:bg-black/5"
+                  ? "bg-[#F0C020] text-[#111111]"
+                  : "text-[#111111] hover:bg-black/5"
                   }`}
               >
                 <tab.icon className="w-4 h-4 text-[#111111]" />
@@ -370,7 +374,7 @@ export default function Dashboard({ initialTab = "overview" }) {
             <button
               onClick={(e) => {
                 e.stopPropagation();
-                handleLogout();
+                requestLogoutConfirmation();
               }}
               title="Logout"
               className="p-1.5 text-[#111111] hover:bg-[#D02020] hover:text-white border border-[#111111] transition-colors"
@@ -511,6 +515,17 @@ export default function Dashboard({ initialTab = "overview" }) {
         confirmTone="danger"
         onCancel={() => setProjectPendingDelete(null)}
         onConfirm={confirmDeleteHistoryItem}
+      />
+
+      <ConfirmationModal
+        isOpen={showLogoutConfirmation}
+        onClose={() => setShowLogoutConfirmation(false)}
+        onConfirm={performLogout}
+        title="Logout Confirmation"
+        message="Are you sure you want to log out? You will need to log in again to access your dashboard."
+        confirmText="Logout"
+        cancelText="Cancel"
+        variant="danger"
       />
 
       <style>{`
@@ -1194,10 +1209,10 @@ function AgentPipeline({ stages, activeStage }) {
                 <div
                   key={stage.title}
                   className={`border-[2px] p-3 text-left transition-all ${isActive
-                      ? "bg-[#D02020] text-white border-[#111111] shadow-[4px_4px_0_#111111]"
-                      : isDone
-                        ? "bg-[#F0C020] text-[#111111] border-[#111111]"
-                        : "bg-white text-[#555555] border-[#CCCCCC]"
+                    ? "bg-[#D02020] text-white border-[#111111] shadow-[4px_4px_0_#111111]"
+                    : isDone
+                      ? "bg-[#F0C020] text-[#111111] border-[#111111]"
+                      : "bg-white text-[#555555] border-[#CCCCCC]"
                     }`}
                 >
                   <div className="w-8 h-8 border border-[#111111] bg-white flex items-center justify-center mb-2 text-[#111111]">
@@ -1274,6 +1289,7 @@ function StorySection({ data }) {
   const demoScript = cleanGeneratedText(
     data.analysis?.demoScript || "Demo flow not ready yet.",
   );
+  const features = data?.projectDNA?.features || [];
 
   return (
     <div className="space-y-8 font-bauhaus">
@@ -1309,6 +1325,12 @@ function StorySection({ data }) {
         <ResultCard title="Demo Flow" color="text-[#D02020]" icon={PlayCircle}>
           <PointList points={extractUsefulPoints(demoScript).slice(0, 4)} />
         </ResultCard>
+
+        {features.length > 0 && (
+          <ResultCard title="Project Features" color="text-[#10B981]" icon={Star}>
+            <PointList points={features.map((f) => typeof f === "string" ? f : f?.name || "a feature").slice(0, 6)} />
+          </ResultCard>
+        )}
       </div>
     </div>
   );
@@ -1327,6 +1349,7 @@ function AnalysisSection({ data }) {
   const architecture = cleanGeneratedText(
     data.analysis?.architecture || "No data.",
   );
+  const features = data?.projectDNA?.features || [];
   const overviewPoints = extractUsefulPoints(overview);
   const architecturePoints = extractUsefulPoints(architecture);
   const healthScore = getProjectHealthScore(data);
@@ -1373,6 +1396,12 @@ function AnalysisSection({ data }) {
             ))}
           </div>
         </ResultCard>
+
+        {features.length > 0 && (
+          <ResultCard title="Detected Features" color="text-[#10B981]" icon={Star}>
+            <PointList points={features.map((f) => typeof f === "string" ? f : f?.name || "a feature").slice(0, 6)} />
+          </ResultCard>
+        )}
 
         <div className="bauhaus-card p-8">
           <h3 className="text-xl font-black mb-6 text-[#111111] uppercase font-['Outfit'] flex items-center gap-3">
@@ -1618,9 +1647,13 @@ function MockInterviewSection({ data }) {
   const [isRecording, setIsRecording] = useState(false);
   const [speakQuestions, setSpeakQuestions] = useState(true);
 
+  const features = data?.projectDNA?.features || [];
   const interviewQuestions = [
     `What problem does ${data?.name || "this project"} solve, and who is it for?`,
-    "Walk me through the main user flow from first screen to final action.",
+    ...features.slice(0, 4).map((feature) => {
+      const fName = typeof feature === "string" ? feature : feature?.name || "this feature";
+      return `Walk me through how you implemented the ${fName} feature — what was the hardest part, and what would you change first?`;
+    }),
     "Where does the core logic live in the codebase?",
     "How does data move between UI, API, and storage?",
     "What was one tradeoff you made while building it?",
@@ -1776,8 +1809,8 @@ function MockInterviewSection({ data }) {
               </div>
               <div
                 className={`p-4 max-w-2xl text-xs sm:text-sm leading-relaxed border-2 border-[#111111] shadow-[3px_3px_0_#111111] ${msg.sender === "ai"
-                    ? "bg-[#F0F0F0] text-[#111111] font-sans"
-                    : "bg-white text-[#111111] font-sans"
+                  ? "bg-[#F0F0F0] text-[#111111] font-sans"
+                  : "bg-white text-[#111111] font-sans"
                   }`}
               >
                 {msg.message}
@@ -1823,8 +1856,8 @@ function MockInterviewSection({ data }) {
               onClick={handleVoiceInput}
               disabled={!data}
               className={`absolute right-3 top-1/2 -translate-y-1/2 p-2 border border-[#111111] transition-all ${isRecording
-                  ? "bg-[#D02020] text-white animate-pulse"
-                  : "bg-white text-[#111111] hover:bg-[#F0C020]"
+                ? "bg-[#D02020] text-white animate-pulse"
+                : "bg-white text-[#111111] hover:bg-[#F0C020]"
                 }`}
               title="Voice to Text Input"
             >
@@ -2550,8 +2583,8 @@ function ConfirmDialog({
               type="button"
               onClick={onConfirm}
               className={`px-5 py-2.5 text-xs font-mono font-bold uppercase border-2 border-[#111111] shadow-[3px_3px_0px_#111111] transition-transform active:translate-x-0.5 active:translate-y-0.5 ${confirmTone === "danger"
-                  ? "bg-[#D02020] hover:bg-red-700 text-white"
-                  : "bg-[#1040C0] hover:bg-blue-800 text-white"
+                ? "bg-[#D02020] hover:bg-red-700 text-white"
+                : "bg-[#1040C0] hover:bg-blue-800 text-white"
                 }`}
             >
               {confirmLabel}

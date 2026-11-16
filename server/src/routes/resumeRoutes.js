@@ -5,7 +5,7 @@ const resumeController = require("../controllers/resumeController");
 const authMiddleware = require("../middleware/auth");
 const {
   ensureResumeDirectory,
-  RESUME_UPLOAD_DIR,
+  getResumeUploadDir,
 } = require("../services/ResumeDocumentService");
 
 const router = express.Router();
@@ -13,7 +13,7 @@ ensureResumeDirectory();
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, RESUME_UPLOAD_DIR);
+    cb(null, getResumeUploadDir());
   },
   filename: (req, file, cb) => {
     const safeBase = path

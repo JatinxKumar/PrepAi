@@ -61,10 +61,11 @@ app.use((err, req, res, next) => {
   res.status(err.status || 500).json({ error: err.message || "Internal Server Error" });
 });
 
-if (process.env.NODE_ENV !== "production" || !process.env.VERCEL) {
+if (require.main === module) {
+  // When the file is executed directly (local dev), connect DB and start HTTP server.
   connectDB().then(() => {
     app.listen(PORT, () => {
-      console.log(`🚀 Server running on ${PORT}`);
+      console.log(`🚀 Server running locally on ${PORT}`);
     });
   });
 }
